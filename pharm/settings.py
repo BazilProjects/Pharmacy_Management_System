@@ -29,8 +29,8 @@ DEBUG = True
 
 # ALLOWED_HOSTS = ['pharmacymanage.herokuapp.com']
 ALLOWED_HOSTS = [
-    'pms-wjw1.onrender.com',
-    '*',
+    'pmms-t0r2.onrender.com/',
+    '127.0.0.1'
 ]
 
 # Application definition
@@ -51,6 +51,8 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+      'whitenoise.middleware.WhiteNoiseMiddleware',
+
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -152,7 +154,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
-
 CRISPY_TEMPLATE_PACK='bootstrap4'
 AUTH_USER_MODEL = "pharmacy.CustomUser"
 
