@@ -73,7 +73,7 @@ amplifytools.xcconfig
 *.pot
 *.pyc
 __pycache__
-
+   
 media/
 
 
