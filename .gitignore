@@ -18,7 +18,7 @@ staticfiles/
 
 # production
 /build
-dist
+
 dist-ssr
 *.local
 
@@ -55,7 +55,7 @@ amplify/mock-api-resources
 amplify/backend/amplify-meta.json
 amplify/backend/.temp
 build/
-dist/
+
 node_modules/
 aws-exports.js
 awsconfiguration.json
@@ -88,7 +88,7 @@ pip-delete-this-directory.txt
 # Distribution / packaging 
 .Python build/ 
 develop-eggs/ 
-dist/ 
+
 downloads/ 
 eggs/ 
 .eggs/ 
