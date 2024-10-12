@@ -6,6 +6,7 @@ myenv/
 /node_modules
 /.pnp
 .pnp.js
+staticfiles/
 
 # testing
 /coverage
@@ -73,7 +74,7 @@ amplifytools.xcconfig
 *.pot
 *.pyc
 __pycache__
-   
+
 media/
 
 
