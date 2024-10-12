@@ -29,8 +29,8 @@ DEBUG = True
 
 # ALLOWED_HOSTS = ['pharmacymanage.herokuapp.com']
 ALLOWED_HOSTS = [
-    'pmms-t0r2.onrender.com',
-    '*',
+    'pms-pharmacy-management-system.herokuapp.com',
+    '127.0.0.1'
 ]
 
 # Application definition
@@ -51,6 +51,8 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+      'whitenoise.middleware.WhiteNoiseMiddleware',
+
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -100,10 +102,9 @@ WSGI_APPLICATION = 'pharm.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': str(BASE_DIR / 'db.sqlite3'),  # Ensure it's a string
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # For database-backed sessions
 
 
 
