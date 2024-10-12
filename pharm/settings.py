@@ -100,9 +100,10 @@ WSGI_APPLICATION = 'pharm.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': str(BASE_DIR / 'db.sqlite3'),  # Ensure it's a string
     }
 }
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # For database-backed sessions
 
 
 
