@@ -1,0 +1,8 @@
+<!-- add_supplier.html -->
+<form method="POST">
+    {% csrf_token %}
+    <input type="text" name="name" placeholder="Supplier Name">
+    <input type="text" name="contact" placeholder="Supplier Contact">
+    <input type="email" name="email" placeholder="Supplier Email">
+    <button type="submit">Add Supplier</button>
+</form>

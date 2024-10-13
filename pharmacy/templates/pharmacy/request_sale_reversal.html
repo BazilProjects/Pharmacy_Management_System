@@ -1,0 +1,7 @@
+<!-- request_sale_reversal.html -->
+<h2>Request Sale Reversal</h2>
+<form method="POST">
+    {% csrf_token %}
+    <textarea name="reason" placeholder="Reason for reversal"></textarea>
+    <button type="submit">Request Reversal</button>
+</form>

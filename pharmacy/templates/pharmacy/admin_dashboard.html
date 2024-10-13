@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard</title>
+</head>
+<body>
+    <h1>Admin Dashboard</h1>
+    <h2>Inventory</h2>
+    <p>Expired Products: {{ expired_notification }}</p>
+    <ul>
+        {% for product in expired_products %}
+            <li>{{ product.name }} expired on {{ product.expiry_date }}</li>
+        {% endfor %}
+    </ul>
+
+    <h2>Low Stock Products</h2>
+    <ul>
+        {% for product in low_stock_products %}
+            <li>{{ product.name }} has only {{ product.stock_quantity }} left</li>
+        {% endfor %}
+    </ul>
+
+    <h2>Sales by Salesperson</h2>
+    <ul>
+        {% for salesperson, total_sales in sales_data.items %}
+            <li>{{ salesperson }}: ${{ total_sales }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

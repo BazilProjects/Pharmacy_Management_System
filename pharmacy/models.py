@@ -1,230 +1,89 @@
 from django.db import models
-from django.utils import timezone
 from django.contrib.auth.models import AbstractUser
+import datetime
 from django.db import models
-from django.db.models.signals import post_save
-from django.dispatch import receiver
-from phonenumber_field.modelfields import PhoneNumberField
-from phonenumber_field.phonenumber import PhoneNumber
+from django.contrib.auth.models import User  # Ensure you have the User model imported
 
-from django.contrib.auth.signals import user_logged_in, user_logged_out
-from django.core.cache import cache 
-from django.db.models import BooleanField, ExpressionWrapper, Q
-from django.db.models.functions import Now
+# Extended User model with roles
+class User(AbstractUser):
+    ROLES = (('admin', 'Admin'), ('salesperson', 'Salesperson'))
+    role = models.CharField(max_length=15, choices=ROLES)
+    suspended = models.BooleanField(default=False)
 
-
-class CustomUser(AbstractUser):
-    user_type_data = ((1, "AdminHOD"), (2, "Pharmacist"), (3, "Doctor"), (4, "PharmacyClerk"),(5, "Patients"))
-    user_type = models.CharField(default=1, choices=user_type_data, max_length=10)
-
-class Patients(models.Model):
-    gender_category=(
-        ('Male','Male'),
-        ('Female','Female'),
+    # Fixing the related_name clash by adding related_name to groups and user_permissions fields
+    groups = models.ManyToManyField(
+        'auth.Group',
+        related_name='pharmacy_user_groups',  # Add unique related_name
+        blank=True,
+        help_text='The groups this user belongs to.',
+        verbose_name='groups',
     )
-    admin = models.OneToOneField(CustomUser,null=True, on_delete = models.CASCADE)
-    reg_no=models.CharField(max_length=30,null=True,blank=True,unique=True)
-    gender=models.CharField(max_length=7,null=True,blank=True,choices=gender_category)
-    first_name=models.CharField(max_length=20,null=True,blank=True)
-    last_name=models.CharField(max_length=20,null=True,blank=True)
-    dob=models.DateTimeField(auto_now_add= False, auto_now=False,null=True,blank=True)
-    phone_number=models.CharField(max_length=10,null=True,blank=True)
-    profile_pic=models.ImageField(default="patient.jpg",null=True,blank=True)
-    age= models.IntegerField(default='0', blank=True, null=True)
-    address=models.CharField(max_length=300,null=True,blank=True)
-    date_admitted=models.DateTimeField(auto_now_add=True, auto_now=False)
-    last_updated = models.DateTimeField(auto_now_add=False, auto_now=True)
-
-    def __str__(self):
-        return str(self.admin)
-
-
-
-class AdminHOD(models.Model):
-    gender_category=(
-        ('Male','Male'),
-        ('Female','Female'),
+    user_permissions = models.ManyToManyField(
+        'auth.Permission',
+        related_name='pharmacy_user_permissions',  # Add unique related_name
+        blank=True,
+        help_text='Specific permissions for this user.',
+        verbose_name='user permissions',
     )
-    admin = models.OneToOneField(CustomUser,null=True, on_delete = models.CASCADE)
-    emp_no= models.CharField(max_length=100,null=True,blank=True)
-    gender=models.CharField(max_length=100,null=True,choices=gender_category)
-    mobile=models.CharField(max_length=10,null=True,blank=True)
-    address=models.CharField(max_length=300,null=True,blank=True)
-    profile_pic=models.ImageField(default="admin.png",null=True,blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    date_employed=models.DateTimeField(auto_now_add=True, auto_now=False)
-    objects = models.Manager()
-    def __str__(self):
-        return str(self.admin)
-    
 
-
-class Pharmacist(models.Model):
-    gender_category=(
-        ('Male','Male'),
-        ('Female','Female'),
-    )
-    admin = models.OneToOneField(CustomUser,null=True, on_delete = models.CASCADE)
-    emp_no=models.CharField(max_length=100,null=True,blank=True)
-    age= models.IntegerField(default='0', blank=True, null=True)
-    gender=models.CharField(max_length=100,null=True,choices=gender_category)
-    mobile =models.CharField(max_length=10,null=True,blank=True)
-    address=models.CharField(max_length=300,null=True,blank=True)
-    profile_pic=models.ImageField(default="images2.png",null=True,blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    objects = models.Manager()
-    def __str__(self):
-        return str(self.admin)
-
-    
-class Doctor(models.Model):
-    gender_category=(
-        ('Male','Male'),
-        ('Female','Female'),
-    )
-    admin = models.OneToOneField(CustomUser,null=True, on_delete = models.CASCADE)
-    emp_no=models.CharField(max_length=100,null=True,blank=True)
-    age= models.IntegerField(default='0', blank=True, null=True)
-    gender=models.CharField(max_length=100,null=True,choices=gender_category)
-    mobile=models.CharField(max_length=10,null=True,blank=True)
-    address=models.CharField(max_length=300,null=True,blank=True)
-    profile_pic=models.ImageField(default="doctor.png",null=True,blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    objects = models.Manager()
-    def __str__(self):
-        return str(self.admin)
-	
-
-class PharmacyClerk(models.Model):
-    gender_category=(
-        ('Male','Male'),
-        ('Female','Female'),
-    )
-    admin = models.OneToOneField(CustomUser,null=True, on_delete = models.CASCADE)
-    emp_no=models.CharField(max_length=100,null=True,blank=True)
-    gender=models.CharField(max_length=100,null=True,choices=gender_category)
-    mobile=models.CharField(max_length=10,null=True,blank=True)
-    address=models.CharField(max_length=300,null=True,blank=True)
-    profile_pic=models.ImageField(default="images2.png",null=True,blank=True)
-    age= models.IntegerField(default='0', blank=True, null=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    objects = models.Manager()
-    def __str__(self):
-        return str(self.admin)
-	
-    
 
 class Category(models.Model):
-    name = models.CharField(max_length=50, blank=False, null=True)
-    
+    name = models.CharField(max_length=100, null=True, blank=True)  # Set null=True, blank=True
+
     def __str__(self):
-        return str(self.name)
-	
-
-    
-class Prescription(models.Model):
-    patient_id = models.ForeignKey(Patients,null=True, on_delete=models.SET_NULL)
-    description=models.TextField(null=True)
-    prescribe=models.CharField(max_length=100,null=True)
-    date_precribed=models.DateTimeField(auto_now_add=True, auto_now=False)
+        return self.name if self.name else "Unnamed Category"  # Handle None case
 
 
+class Supplier(models.Model):
+    name = models.CharField(max_length=100, null=True, blank=True)  # Set null=True, blank=True
+    contact = models.CharField(max_length=100, null=True, blank=True)  # Set null=True, blank=True
+    email = models.EmailField(null=True, blank=True)  # Set null=True, blank=True
+    date_joined = models.DateField(auto_now_add=True)  # Typically, this would remain as is
 
-
-class ExpiredManager(models.Manager):
-
-    def get_queryset(self):
-        return super().get_queryset().annotate(
-            expired=ExpressionWrapper(Q(valid_to__lt=Now()), output_field=BooleanField())
-        )
-
-class Stock(models.Model):
-    category = models.ForeignKey(Category,null=True,on_delete=models.CASCADE,blank=True)
-    drug_imprint=models.CharField(max_length=6 ,blank=True, null=True)
-    drug_name = models.CharField(max_length=50, blank=True, null=True)
-    drug_color = models.CharField(max_length=50, blank=True, null=True)
-    drug_shape = models.CharField(max_length=50, blank=True, null=True)
-    quantity = models.IntegerField(default='0', blank=True, null=True)
-    receive_quantity = models.IntegerField(default='0', blank=True, null=True)
-    reorder_level = models.IntegerField(default='0', blank=True, null=True)
-    manufacture= models.CharField(max_length=50, blank=True, null=True)
-    last_updated = models.DateTimeField(auto_now_add=False, auto_now=True)
-    timestamp = models.DateTimeField(auto_now_add=True, auto_now=False)
-    drug_strength= models.CharField(max_length=10, blank=True, null=True)
-    valid_from = models.DateTimeField(blank=True, null=True,default=timezone.now)
-    valid_to = models.DateTimeField(blank=False, null=True)
-    drug_description=models.TextField(blank=True,max_length=1000,null=True)
-    drug_pic=models.ImageField(default="images2.png",null=True,blank=True)
-    objects = ExpiredManager()
-   
     def __str__(self):
-        return str(self.drug_name)
-   
-    
-class Dispense(models.Model):
-    
-    patient_id = models.ForeignKey(Patients, on_delete=models.DO_NOTHING,null=True)
-    drug_id = models.ForeignKey(Stock, on_delete=models.SET_NULL,null=True,blank=False)
-    dispense_quantity = models.PositiveIntegerField(default='1', blank=False, null=True)
-    taken=models.CharField(max_length=300,null=True, blank=True)
-    stock_ref_no=models.CharField(max_length=300,null=True, blank=True)
-    instructions=models.TextField(max_length=300,null=True, blank=False)
-    dispense_at = models.DateTimeField(auto_now_add=True,null=True, blank=True)
+        return self.name if self.name else "Unnamed Supplier"  # Handle None case
 
 
-class PatientFeedback(models.Model):
-    id = models.AutoField(primary_key=True)
-    patient_id = models.ForeignKey(Patients, on_delete=models.CASCADE)
-    admin_id= models.ForeignKey( AdminHOD,null=True, on_delete=models.CASCADE)
-    pharmacist_id=models.ForeignKey( Pharmacist,null=True, on_delete=models.CASCADE)
-    feedback = models.TextField(null=True)
-    feedback_reply = models.TextField(null=True)
-    admin_created_at = models.DateTimeField(null=True)
+class Product(models.Model):
+    name = models.CharField(max_length=100, null=True, blank=True)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True, blank=True)
+    supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE, null=True, blank=True)
+    stock_quantity = models.IntegerField(null=True, blank=True)
+    price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    cost_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)  # New field
+    expiry_date = models.DateField(null=True, blank=True)
+    image = models.ImageField(upload_to='products/', null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    objects = models.Manager()
+
+    def is_expired(self):
+        return self.expiry_date < datetime.date.today()
+
+    def __str__(self):
+        return self.name
 
 
 
+class Sale(models.Model):
+    STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('completed', 'Completed'),
+    ]
+    
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, null=True, blank=True)
+    quantity = models.IntegerField(null=True, blank=True)
+    total_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    date_of_sale = models.DateTimeField(auto_now_add=True)
+    salesperson = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    order_status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='completed', null=True, blank=True)  # This should be here
+
+    def __str__(self):
+        return f"Sale of {self.product} by {self.salesperson} on {self.date_of_sale}"
 
 
-@receiver(post_save, sender=CustomUser)
-def create_user_profile(sender, instance, created, **kwargs):
-    if created:
-        if instance.user_type == 1:
-            AdminHOD.objects.create(admin=instance)
-        if instance.user_type == 2:
-            Pharmacist.objects.create(admin=instance,address="")
-        if instance.user_type == 3:
-            Doctor.objects.create(admin=instance,address="")
-        if instance.user_type == 4:
-            PharmacyClerk.objects.create(admin=instance,address="")
-        if instance.user_type == 5:
-            Patients.objects.create(admin=instance,address="")
-       
-       
-       
-
-@receiver(post_save, sender=CustomUser)
-def save_user_profile(sender, instance, **kwargs):
-    if instance.user_type == 1:
-        instance.adminhod.save()
-    if instance.user_type == 2:
-        instance.pharmacist.save()
-    if instance.user_type == 3:
-        instance.doctor.save()
-    if instance.user_type == 4:
-        instance.pharmacyclerk.save()
-    if instance.user_type == 5:
-        instance.patients.save()
-
-
-   
-
-
-
- 
+class SaleReversal(models.Model):
+    sale = models.ForeignKey(Sale, on_delete=models.CASCADE, null=True, blank=True)  # Set null=True, blank=True
+    reason = models.TextField(null=True, blank=True)  # Set null=True, blank=True
+    is_approved = models.BooleanField(default=False)
+    request_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reversal_requests', null=True, blank=True)  # Set null=True, blank=True
+    approved_by = models.ForeignKey(User, null=True, on_delete=models.SET_NULL, related_name='reversal_approvals', blank=True)  # Keep SET_NULL and set blank=True
+    created_at = models.DateTimeField(auto_now_add=True)  # Typically, this would remain as is

@@ -1,0 +1,26 @@
+<!-- index2.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monthly Report</title>
+</head>
+<body>
+    <h1>Monthly Report</h1>
+
+    <p>Current Month's Gross Profit: {{ current_month_gross_profit }}</p>
+
+    {% if current_month_gross_profit == 0 %}
+        <p>No profit this month.</p>
+    {% else %}
+        <p>Profit this month: {{ current_month_gross_profit }}</p>
+    {% endif %}
+
+    <p>Debug Info:</p>
+    <ul>
+        <li>Gross Profit Value: {{ current_month_gross_profit }}</li>
+        <li>Is Zero: {% if current_month_gross_profit == 0 %} True {% else %} False {% endif %}</li> <!-- Correct comparison -->
+    </ul>
+</body>
+</html>
