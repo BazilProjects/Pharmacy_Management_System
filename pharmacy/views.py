@@ -3,12 +3,25 @@ from django.contrib.auth import login, authenticate
 from .models import Product, Sale, User, SaleReversal
 import datetime
 from django.contrib import messages
-
+from .models import Pharmacy
+from .forms import PharmacyForm
 from django.shortcuts import render
 from .models import Sale, Product
 from django.utils import timezone
 from datetime import timedelta
 from django.db.models import Sum, F
+from django.utils import timezone
+
+def get_today_sales_and_revenue(pharmacy):
+    today = timezone.now().date()
+
+    # Total sales (number of products sold)
+    total_sales = Sale.objects.filter(date_of_sale__date=today, pharmacy=pharmacy).aggregate(total_sold=Sum('quantity'))['total_sold'] or 0
+
+    # Total money made (sum of total_price)
+    total_revenue = Sale.objects.filter(date_of_sale__date=today, pharmacy=pharmacy).aggregate(total_money_made=Sum('total_price'))['total_money_made'] or 0.00
+
+    return total_sales, total_revenue
 
 def index(request):
     today = timezone.now()
@@ -27,8 +40,21 @@ def index(request):
     total_antivirals = Product.objects.filter(category__name='Antivirals').count()
     total_antibacterials = Product.objects.filter(category__name='Antibacterials').count()
     total_antifungals = Product.objects.filter(category__name='Antifungals').count()
+    # Retrieve all Sale objects
+
+    sales =Sale.objects.all()# Sale.objects.filter(product__pharmacy=request.user.pharmacy)
+
+    pharmacy = request.user.pharmacy
+
+    total_sales, total_revenue = get_today_sales_and_revenue(pharmacy)
+
+    context = {
+        'total_sales': total_sales,
+        'total_revenue': total_revenue,
+    }
     
     context = {
+        'sales': sales,
         'current_month_revenue': current_month_revenue,
         'current_month_gross_profit': current_month_gross_profit,
         'current_month_net_profit': current_month_net_profit,
@@ -42,6 +68,19 @@ def index(request):
 
     return render(request, 'pharmacy/index.html',context)
 
+
+def create_pharmacy(request):
+    if request.user.role == 'admin':
+        if request.method == 'POST':
+            form = PharmacyForm(request.POST)
+            if form.is_valid():
+                form.save()
+                return redirect('pharmacy_list')
+        else:
+            form = PharmacyForm()
+        return render(request, 'pharmacy/create_pharmacy.html', {'form': form})
+    else:
+        return redirect('no_permission')  # Salesperson shouldn't be able to create a pharmacy
 
 # Login View
 def login_view(request):
