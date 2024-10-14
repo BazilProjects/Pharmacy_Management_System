@@ -161,3 +161,4 @@ AUTH_USER_MODEL = 'pharmacy.User'  # Replace 'yourapp' with the actual name of y
 # settings.py
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'  # or 'bootstrap5', 'uni_form', etc.
+LOGIN_URL = '/login/'
