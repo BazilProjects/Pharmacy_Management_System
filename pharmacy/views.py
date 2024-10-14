@@ -4,7 +4,7 @@ from .models import Product, Sale, User, SaleReversal
 import datetime
 from django.contrib import messages
 from .models import Pharmacy
-from .forms import PharmacyForm
+from .forms import *
 from django.shortcuts import render
 from .models import Sale, Product
 from django.utils import timezone
@@ -109,7 +109,7 @@ def index(request):
     current_month_gross_profit = Sale.objects.filter(date_of_sale__range=(first_day_of_month, last_day_of_month)).annotate(
         gross_profit=F('total_price') - F('product__cost_price')
     ).aggregate(total_gross_profit=Sum('gross_profit'))['total_gross_profit'] or int(0)
-    fixed_expenses = 200  # Example fixed expenses for the month
+    fixed_expenses = 0  # Example fixed expenses for the month
     current_month_net_profit = current_month_gross_profit - fixed_expenses
 
     pending_orders_count = Sale.objects.filter(order_status='pending').count()
@@ -132,7 +132,7 @@ def index(request):
     }
     
     context = {
-        
+
         'sales': sales,
         'current_month_revenue': current_month_revenue,
         'current_month_gross_profit': current_month_gross_profit,
@@ -165,16 +165,23 @@ def create_pharmacy(request):
 # Login View
 def login_view(request):
     if request.method == 'POST':
-        username = request.POST['username']
-        password = request.POST['password']
-        user = authenticate(request, username=username, password=password)
-        if user and not user.suspended:
-            login(request, user)
-            if user.role == 'admin':
-                return redirect('admin_dashboard')
-            elif user.role == 'salesperson':
-                return redirect('salesperson_dashboard')
-    return render(request, 'pharmacy/login.html')
+        form = CustomLoginForm(data=request.POST)
+        if form.is_valid():
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password']
+            user = authenticate(request, username=username, password=password)
+            if user and not user.suspended:
+                login(request, user)
+                if user.role == 'admin':
+                    return redirect('/')
+                elif user.role == 'salesperson':
+                    return redirect('/')
+                else:
+                    return redirect('/')
+    else:
+        form = CustomLoginForm()
+    context={'form':form,}
+    return render(request, 'pharmacy/login.html',context)
 
 # Admin Dashboard View
 def admin_dashboard(request):
