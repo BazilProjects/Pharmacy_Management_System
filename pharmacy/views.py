@@ -11,6 +11,76 @@ from django.utils import timezone
 from datetime import timedelta
 from django.db.models import Sum, F
 from django.utils import timezone
+from django.shortcuts import render, redirect
+from .forms import CustomAdminSignUpForm
+from django.contrib.auth import login
+from .models import User
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import login
+from .models import User, Group
+
+
+
+
+def admin_signup(request):
+    if request.method == 'POST':
+        form = CustomAdminSignUpForm(request.POST)
+        if form.is_valid():
+            user = form.save()  # No commit argument needed now
+            user.role = 'admin'  # Assign the role from the URL parameter
+            user.save()
+            login(request, user)  # Log the user in after registration
+            return redirect('index')  # Redirect to some admin dashboard after sign-up
+    else:
+        form = CustomAdminSignUpForm()
+    
+    return render(request, 'pharmacy/register_admin.html', {'form': form})
+
+
+
+def manager_signup(request, group_id):
+    group = get_object_or_404(Group, id=group_id)  # Fetch the group using the group_id from the URL
+
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save(commit=False)
+            user.role = 'manager'  # Set role as manager
+            user.save()
+            user.groups.add(group)  # Add the user to the specified group
+            login(request, user)
+            return redirect('manager_dashboard')  # Redirect to manager's dashboard after sign-up
+    else:
+        form = UserCreationForm()
+
+    return render(request, 'manager_signup.html', {'form': form, 'group': group})
+'''
+<a href="{% url 'manager_signup' group_id=1 %}">Sign Up as Manager for Group 1</a>
+<a href="{% url 'salesperson_signup' group_id=2 %}">Sign Up as Salesperson for Group 2</a>
+'''
+
+def salesperson_signup(request, group_id):
+    group = get_object_or_404(Group, id=group_id)  # Fetch the group using the group_id from the URL
+
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save(commit=False)
+            user.role = 'salesperson'  # Set role as salesperson
+            user.save()
+            user.groups.add(group)  # Add the user to the specified group
+            login(request, user)
+            return redirect('salesperson_dashboard')  # Redirect to salesperson's dashboard after sign-up
+    else:
+        form = UserCreationForm()
+
+    return render(request, 'salesperson_signup.html', {'form': form, 'group': group})
+
+
+
+
+
 
 def get_today_sales_and_revenue(pharmacy):
     today = timezone.now().date()
@@ -42,30 +112,33 @@ def index(request):
     total_antifungals = Product.objects.filter(category__name='Antifungals').count()
     # Retrieve all Sale objects
 
+
     sales =Sale.objects.all()# Sale.objects.filter(product__pharmacy=request.user.pharmacy)
+    if not request.user.is_authenticated:
 
-    pharmacy = request.user.pharmacy
+        pharmacy = request.user.pharmacy
 
-    total_sales, total_revenue = get_today_sales_and_revenue(pharmacy)
+        total_sales, total_revenue = get_today_sales_and_revenue(pharmacy)
 
-    context = {
-        'total_sales': total_sales,
-        'total_revenue': total_revenue,
-    }
-    
-    context = {
-        'sales': sales,
-        'current_month_revenue': current_month_revenue,
-        'current_month_gross_profit': current_month_gross_profit,
-        'current_month_net_profit': current_month_net_profit,
-        'pending_orders_count': pending_orders_count,
-        'expired_drugs_count': expired_drugs_count,
-        'total_antivirals': total_antivirals,
-        'total_antibacterials': total_antibacterials,
-        'total_antifungals': total_antifungals,
-    }
+        context = {
+            'total_sales': total_sales,
+            'total_revenue': total_revenue,
+        }
+        
+        context = {
+            'sales': sales,
+            'current_month_revenue': current_month_revenue,
+            'current_month_gross_profit': current_month_gross_profit,
+            'current_month_net_profit': current_month_net_profit,
+            'pending_orders_count': pending_orders_count,
+            'expired_drugs_count': expired_drugs_count,
+            'total_antivirals': total_antivirals,
+            'total_antibacterials': total_antibacterials,
+            'total_antifungals': total_antifungals,
+        }
 
-
+        return render(request, 'pharmacy/index.html',context)
+    context={}
     return render(request, 'pharmacy/index.html',context)
 
 

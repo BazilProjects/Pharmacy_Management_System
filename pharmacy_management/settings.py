@@ -155,3 +155,5 @@ DEFAULT_FROM_EMAIL = 'admin@lecz.ltd'  # Default sender email
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+# settings.py
+AUTH_USER_MODEL = 'pharmacy.User'  # Replace 'yourapp' with the actual name of your app

@@ -16,9 +16,12 @@ class Pharmacy(models.Model):
     def __str__(self):
         return self.name
 
-# Extended User model with roles and pharmacy relation
 class User(AbstractUser):
-    ROLES = (('admin', 'Admin'), ('salesperson', 'Salesperson'))
+    ROLES = (
+        ('admin', 'Admin'),
+        ('salesperson', 'Salesperson'),
+        ('manager', 'Manager'),  # Added manager role
+    )
     
     role = models.CharField(max_length=15, choices=ROLES)
     suspended = models.BooleanField(default=False)
@@ -42,6 +45,7 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.username
+
 
 
 

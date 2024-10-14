@@ -1,0 +1,59 @@
+{% extends 'pharmacy/base/base_register.html' %}
+{% block content %}
+  <body>
+    <div class="wrapper">
+      <!-- Sidebar -->
+      <div>
+        <div class="container" >
+          <div class="page-inner">
+            <!-- Card -->
+            <!-- Card With Icon States Color -->
+            <!-- Row Card No Padding -->
+            <!-- Pricing -->
+            <h3 class="fw-bold mb-3" style="text-align: center;"><u>LECZ-PharmaSuite(LPS)</u></h3>
+            <div class="row justify-content-center align-items-center mb-1" style="background-image: url('/static/assets/img/pharmacy2.jpg');">
+
+              <div class="col-md-3 ps-md-0 pe-md-0">
+                <form method="POST">
+                  {% csrf_token %}
+                <div class="card card-pricing card-pricing-focus card-primary">
+                  <div class="card-header">
+                    <h4 class="card-title">Business Owner(Admin)</h4>
+                    <div class="card-price">
+                      <span class="text">Registration</span>
+                    </div>
+                  </div>
+                  <div class="card-body">
+                    <ul class="specification-list">
+                      {{form.as_p}}
+                      <input type="checkbox" id="togglePassword" onclick="togglePasswordVisibility()"> Show Password
+
+                    </ul>
+                  </div>
+                  <div class="card-footer">
+                    <button class="btn btn-light w-100" type="submit">
+                      <b>REGISTRATION</b>
+                    </button>
+                  </div>
+                </div>
+                </form>
+              </div>
+
+            </div>
+          </div>
+        </div>
+<script>
+        function togglePasswordVisibility() {
+            var passwordField = document.getElementById("id_password");
+            var password2Field = document.getElementById("id_password2");
+            // If the password field is hidden, show it, and vice versa
+            if (passwordField.type === "password") {
+                passwordField.type = "text";
+                password2Field.type = "text";
+            } else {
+                passwordField.type = "password";
+                password2Field.type = "password";
+            }
+        }
+    </script>
+{% endblock %}
