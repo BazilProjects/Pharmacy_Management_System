@@ -12,5 +12,5 @@ urlpatterns = [
     path('manager/signup/<int:group_id>/', views.manager_signup, name='manager_signup'),
     #
     # Salesperson sign-up URL, takes group_id as a parameter
-    path('salesperson/signup/<int:group_id>', views.salesperson_signup, name='salesperson_signup'),
+    path('salesperson/signup/<int:group_id>/', views.salesperson_signup, name='salesperson_signup'),
 ]

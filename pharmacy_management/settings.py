@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sitemaps',
     'django_jinja',
+    'crispy_forms',
     'pharmacy',
 ]
 
@@ -157,3 +158,6 @@ DEFAULT_FROM_EMAIL = 'admin@lecz.ltd'  # Default sender email
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # settings.py
 AUTH_USER_MODEL = 'pharmacy.User'  # Replace 'yourapp' with the actual name of your app
+# settings.py
+
+CRISPY_TEMPLATE_PACK = 'bootstrap4'  # or 'bootstrap5', 'uni_form', etc.

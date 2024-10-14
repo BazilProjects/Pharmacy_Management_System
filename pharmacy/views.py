@@ -19,8 +19,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
 from .models import User, Group
-
-
+# views.py
+from django.contrib.auth.decorators import login_required
 
 
 def admin_signup(request):
@@ -40,7 +40,6 @@ def admin_signup(request):
 
 
 def manager_signup(request, group_id):
-    print("Manager signup view accessed with group_id:", group_id)  # Debug line
     group = get_object_or_404(Pharmacy, id=group_id)  # Fetch the group using the group_id from the URL
 
     if request.method == 'POST':
@@ -48,6 +47,7 @@ def manager_signup(request, group_id):
         if form.is_valid():
             user = form.save()  # No commit argument needed now
             user.role = 'manager'  # Assign the role from the URL parameter
+            user.pharmacy=group
             user.save()
             login(request, user)  # Log the user in after registration
             return redirect('index')  # Redirect to some admin dashboard after sign-up
@@ -57,7 +57,7 @@ def manager_signup(request, group_id):
                 'form': form, 
                 'group': group,
                 }
-        print('Failed to find template')
+
         return render(request, 'pharmacy/register_manager.html',context)
 '''
 <a href="{% url 'manager_signup' group_id=1 %}">Sign Up as Manager for Group 1</a>
@@ -65,21 +65,22 @@ def manager_signup(request, group_id):
 '''
 
 def salesperson_signup(request, group_id):
-    group = get_object_or_404(Group, id=group_id)  # Fetch the group using the group_id from the URL
+    group = get_object_or_404(Pharmacy, id=group_id)  # Fetch the group using the group_id from the URL
 
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        form = CustomAdminSignUpForm(request.POST)
         if form.is_valid():
-            user = form.save(commit=False)
+            user = form.save()  # No commit argument needed now
             user.role = 'salesperson'  # Set role as salesperson
-            user.save()
-            user.groups.add(group)  # Add the user to the specified group
+            user.pharmacy=group  # Add the user to the specified group
+            user.save() 
             login(request, user)
-            return redirect('salesperson_dashboard')  # Redirect to salesperson's dashboard after sign-up
+            return redirect('index')  # Redirect to salesperson's dashboard after sign-up
     else:
-        form = UserCreationForm()
+        form = CustomAdminSignUpForm()
 
-    return render(request, 'salesperson_signup.html', {'form': form, 'group': group})
+    context={'form': form, 'group': group}
+    return render(request, 'pharmacy/register_sales_person.html', context)
 
 
 
@@ -97,6 +98,8 @@ def get_today_sales_and_revenue(pharmacy):
 
     return total_sales, total_revenue
 
+
+@login_required
 def index(request):
     today = timezone.now()
     first_day_of_month = today.replace(day=1)
@@ -118,32 +121,32 @@ def index(request):
 
 
     sales =Sale.objects.all()# Sale.objects.filter(product__pharmacy=request.user.pharmacy)
-    if not request.user.is_authenticated:
 
-        pharmacy = request.user.pharmacy
+    pharmacy = request.user.pharmacy
 
-        total_sales, total_revenue = get_today_sales_and_revenue(pharmacy)
+    total_sales, total_revenue = get_today_sales_and_revenue(pharmacy)
 
-        context = {
-            'total_sales': total_sales,
-            'total_revenue': total_revenue,
-        }
+    context = {
+        'total_sales': total_sales,
+        'total_revenue': total_revenue,
+    }
+    
+    context = {
         
-        context = {
-            'sales': sales,
-            'current_month_revenue': current_month_revenue,
-            'current_month_gross_profit': current_month_gross_profit,
-            'current_month_net_profit': current_month_net_profit,
-            'pending_orders_count': pending_orders_count,
-            'expired_drugs_count': expired_drugs_count,
-            'total_antivirals': total_antivirals,
-            'total_antibacterials': total_antibacterials,
-            'total_antifungals': total_antifungals,
-        }
+        'sales': sales,
+        'current_month_revenue': current_month_revenue,
+        'current_month_gross_profit': current_month_gross_profit,
+        'current_month_net_profit': current_month_net_profit,
+        'pending_orders_count': pending_orders_count,
+        'expired_drugs_count': expired_drugs_count,
+        'total_antivirals': total_antivirals,
+        'total_antibacterials': total_antibacterials,
+        'total_antifungals': total_antifungals,
+    }
 
-        return render(request, 'pharmacy/index.html',context)
-    context={}
     return render(request, 'pharmacy/index.html',context)
+
+
 
 
 def create_pharmacy(request):

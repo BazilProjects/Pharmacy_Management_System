@@ -1,4 +1,5 @@
 {% extends 'pharmacy/base/base_register.html' %}
+{% load crispy_forms_tags %}
 {% block content %}
   <body>
     <div class="wrapper">
@@ -25,7 +26,7 @@
                   </div>
                   <div class="card-body">
                     <ul class="specification-list">
-                      {{form.as_p}}
+                      {{ form|crispy }} 
                       <input type="checkbox" id="togglePassword" onclick="togglePasswordVisibility()"> Show Password
 
                     </ul>
