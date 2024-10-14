@@ -7,14 +7,24 @@ from django.contrib.auth.models import User  # Ensure you have the User model im
 from django.db import models
 from django.contrib.auth.models import AbstractUser, Group, Permission
 
-# Pharmacy Model
+from django.db import models
+from django.conf import settings  # Import settings to reference the custom user model
+
 class Pharmacy(models.Model):
-    name = models.CharField(max_length=255)
-    location = models.CharField(max_length=255)
+    name = models.CharField(max_length=255,blank=True,null=True)
+    location = models.CharField(max_length=255,blank=True,null=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,  # Use AUTH_USER_MODEL for the custom user model
+        on_delete=models.CASCADE,   # Define the behavior on user deletion
+        blank=True,
+        null=True,
+        related_name='pharmacies'   # This allows reverse lookup
+    )
 
     def __str__(self):
         return self.name
+
 
 class User(AbstractUser):
     ROLES = (
@@ -25,23 +35,7 @@ class User(AbstractUser):
     
     role = models.CharField(max_length=15, choices=ROLES)
     suspended = models.BooleanField(default=False)
-    pharmacy = models.ForeignKey(Pharmacy, on_delete=models.CASCADE, null=True, blank=True, related_name='users')
-
-    # Fixing the related_name clash by adding related_name to groups and user_permissions fields
-    groups = models.ManyToManyField(
-        Group,
-        related_name='pharmacy_user_groups',
-        blank=True,
-        help_text='The groups this user belongs to.',
-        verbose_name='groups',
-    )
-    user_permissions = models.ManyToManyField(
-        Permission,
-        related_name='pharmacy_user_permissions',
-        blank=True,
-        help_text='Specific permissions for this user.',
-        verbose_name='user permissions',
-    )
+    pharmacy = models.ForeignKey(Pharmacy, on_delete=models.CASCADE, null=True, blank=True, related_name='creators_users')
 
     def __str__(self):
         return self.username

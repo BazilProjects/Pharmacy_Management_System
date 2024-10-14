@@ -40,21 +40,25 @@ def admin_signup(request):
 
 
 def manager_signup(request, group_id):
-    group = get_object_or_404(Group, id=group_id)  # Fetch the group using the group_id from the URL
+    print("Manager signup view accessed with group_id:", group_id)  # Debug line
+    group = get_object_or_404(Pharmacy, id=group_id)  # Fetch the group using the group_id from the URL
 
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        form = CustomAdminSignUpForm(request.POST)
         if form.is_valid():
-            user = form.save(commit=False)
-            user.role = 'manager'  # Set role as manager
+            user = form.save()  # No commit argument needed now
+            user.role = 'manager'  # Assign the role from the URL parameter
             user.save()
-            user.groups.add(group)  # Add the user to the specified group
-            login(request, user)
-            return redirect('manager_dashboard')  # Redirect to manager's dashboard after sign-up
+            login(request, user)  # Log the user in after registration
+            return redirect('index')  # Redirect to some admin dashboard after sign-up
     else:
-        form = UserCreationForm()
-
-    return render(request, 'manager_signup.html', {'form': form, 'group': group})
+        form = CustomAdminSignUpForm()
+        context={
+                'form': form, 
+                'group': group,
+                }
+        print('Failed to find template')
+        return render(request, 'pharmacy/register_manager.html',context)
 '''
 <a href="{% url 'manager_signup' group_id=1 %}">Sign Up as Manager for Group 1</a>
 <a href="{% url 'salesperson_signup' group_id=2 %}">Sign Up as Salesperson for Group 2</a>
