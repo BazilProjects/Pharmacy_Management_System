@@ -27,7 +27,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-n5k64x1k-203=bs)f3d2)+%96h8x+g!jo_&11gz5hu)u%b(-cg'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['pharmacy-management-system-iowy.onrender.com','*']
 
@@ -49,6 +49,8 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # Add WhiteNoise middleware here
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -162,3 +164,4 @@ AUTH_USER_MODEL = 'pharmacy.User'  # Replace 'yourapp' with the actual name of y
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'  # or 'bootstrap5', 'uni_form', etc.
 LOGIN_URL = '/login/'
+#STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
