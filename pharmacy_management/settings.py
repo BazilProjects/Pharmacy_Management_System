@@ -149,7 +149,7 @@ EMAIL_PORT = 465 # Common port for TLS
 EMAIL_USE_SSL = True  # Use TLS (if your server supports it)
 EMAIL_HOST_USER = 'support@lecz.ltd'  # Your email address
 EMAIL_HOST_PASSWORD = '1234$Victoria'  # Your email password or app-specific password
-DEFAULT_FROM_EMAIL = 'admin@lecz.ltd'  # Default sender email
+DEFAULT_FROM_EMAIL = 'support@lecz.ltd'  # Default sender email
 
 
 # Default primary key field type
