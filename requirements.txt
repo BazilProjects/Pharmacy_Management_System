@@ -2,3 +2,4 @@ Django==3.2
 gunicorn
 django_jinja
 django-crispy-forms
+whitenoise
