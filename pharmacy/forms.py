@@ -1,5 +1,5 @@
 from django import forms
-from .models import Product, Sale,Pharmacy
+from .models import *
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from .models import User
@@ -74,3 +74,59 @@ class CustomAdminSignUpForm(forms.Form):
             password=self.cleaned_data['password']
         )
         return user
+
+
+
+class ProductForm(forms.ModelForm):
+    class Meta:
+        model = Product
+        fields = ['name', 'category', 'supplier', 'stock_quantity', 'price', 'cost_price', 'expiry_date', 'image']
+
+
+class CategoryForm(forms.ModelForm):
+    class Meta:
+        model = Product
+        fields = ['name']
+
+
+class SupplierForm(forms.ModelForm):
+    class Meta:
+        model = Supplier
+        fields = ['name','contact','email']
+
+
+
+
+class SaleForm(forms.ModelForm):
+    class Meta:
+        model = Sale
+        fields = ['product', 'quantity', 'total_price', 'salesperson', 'order_status']  # Exclude 'date_of_sale' as it's auto-populated
+
+    # Optionally, override the init method to customize the form behavior if needed
+    def __init__(self, *args, **kwargs):
+        super(SaleForm, self).__init__(*args, **kwargs)
+        self.fields['product'].widget.attrs.update({'class': 'form-control'})
+        self.fields['quantity'].widget.attrs.update({'class': 'form-control'})
+        self.fields['total_price'].widget.attrs.update({'class': 'form-control'})
+        self.fields['salesperson'].widget.attrs.update({'class': 'form-control'})
+        self.fields['order_status'].widget.attrs.update({'class': 'form-control'})
+"""
+class SaleForm(forms.ModelForm):
+    class Meta:
+        model = Sale
+        fields = ['product', 'quantity', 'total_price', 'salesperson', 'order_status']  # Exclude 'date_of_sale' as it's auto-populated
+        widgets = {
+            'order_status': forms.Select(choices=Sale.STATUS_CHOICES),
+            'salesperson': forms.Select(),
+
+        }
+
+    # Optionally, override the init method to customize the form behavior if needed
+    def __init__(self, *args, **kwargs):
+        super(SaleForm, self).__init__(*args, **kwargs)
+        self.fields['product'].widget.attrs.update({'class': 'form-control'})
+        self.fields['quantity'].widget.attrs.update({'class': 'form-control'})
+        self.fields['total_price'].widget.attrs.update({'class': 'form-control'})
+        self.fields['salesperson'].widget.attrs.update({'class': 'form-control'})
+        self.fields['order_status'].widget.attrs.update({'class': 'form-control'})
+"""

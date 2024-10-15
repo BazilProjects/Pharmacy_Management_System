@@ -3,7 +3,7 @@ from django.contrib.auth import login, authenticate
 from .models import Product, Sale, User, SaleReversal
 import datetime
 from django.contrib import messages
-from .models import Pharmacy
+from .models import *
 from .forms import *
 from django.shortcuts import render
 from .models import Sale, Product
@@ -21,7 +21,7 @@ from django.contrib.auth import login
 from .models import User, Group
 # views.py
 from django.contrib.auth.decorators import login_required
-
+from .forms import ProductForm
 
 def admin_signup(request):
     if request.method == 'POST':
@@ -39,8 +39,9 @@ def admin_signup(request):
 
 
 
-def manager_signup(request, group_id):
-    group = get_object_or_404(Pharmacy, id=group_id)  # Fetch the group using the group_id from the URL
+def manager_signup(request,group_id):
+    
+    group =get_object_or_404(Pharmacy, id=group_id)  # Fetch the group using the group_id from the URL
 
     if request.method == 'POST':
         form = CustomAdminSignUpForm(request.POST)
@@ -162,6 +163,67 @@ def create_pharmacy(request):
     else:
         return redirect('no_permission')  # Salesperson shouldn't be able to create a pharmacy
 
+
+
+
+def all_pharmacy(request):
+    #pharmacy=request.user.pharmacy
+    if request.method == 'POST':
+        form = PharmacyForm(request.POST, request.FILES)  # Handle file upload for image
+        if form.is_valid():
+            pharmacy = form.save(commit=False)
+            pharmacy.created_by=request.user
+            pharmacy.save()
+            return redirect('all_pharmacy')  # Redirect to a pharmacy list view or any other view
+    else:
+        form = PharmacyForm()
+
+    
+    pharmacys=Pharmacy.objects.all().filter(created_by=request.user)# (Pharmacys,pharmacy=pharmacy)  # Fetch the group using the group_id from the URL
+    context={
+            'pharmacys': pharmacys,
+            'form': form
+            }
+
+    return render(request, 'pharmacy/all_pharmacy.html',context)
+
+def add_pharmacy(request):
+    if request.method == 'POST':
+        form = PharmacyForm(request.POST, request.FILES)  # Handle file upload for image
+        if form.is_valid():
+            pharmacy = form.save(commit=False)
+            pharmacy.created_by=request.user
+            pharmacy.save()
+            return redirect('all_pharmacy')  # Redirect to a pharmacy list view or any other view
+    else:
+        form = PharmacyForm()
+    
+    context = {'form': form}
+    return render(request, 'pharmacy/add_pharmacy.html', context)
+
+
+# Edit Pharmacys (Admin)
+##@user_passes_test(is_admin)
+def edit_pharmacy(request, pharmacy_id):
+    pharmacy = Pharmacy.objects.get(id=pharmacy_id)
+    if request.method == 'POST':
+        form = PharmacyForm(request.POST, request.FILES, instance=pharmacy)
+        if form.is_valid():
+            form.save()
+            return redirect('all_drugs')
+    else:
+        form = PharmacyForm(instance=pharmacy)
+    return render(request, 'pharmacy/add_product.html', {'form': form, 'product':'Pharmacy Store'})
+
+# Delete Pharmacys (Admin)
+##@user_passes_test(is_admin)
+def delete_pharmacy(request, pharmacy_id):
+    pharmacy = Pharmacy.objects.get(id=pharmacy_id)
+    pharmacy.delete()
+    return redirect('all_pharmacy')
+
+
+
 # Login View
 def login_view(request):
     if request.method == 'POST':
@@ -258,17 +320,226 @@ def approve_sale_reversal(request, reversal_id):
 
 
 
-# Add Product (Admin)
-#user_passes_test(is_admin)
-def add_product(request):
+
+
+def all_category(request):
+    pharmacy=request.user.pharmacy
     if request.method == 'POST':
-        form = ProductForm(request.POST, request.FILES)
+        form = CategoryForm(request.POST, request.FILES)  # Handle file upload for image
+        if form.is_valid():
+            category = form.save(commit=False)
+            category.pharmacy=pharmacy
+            category.save()
+            return redirect('category_list')  # Redirect to a category list view or any other view
+    else:
+        form = CategoryForm()
+
+    
+    drugs=Category.objects.all().filter(pharmacy=pharmacy)# (Category,pharmacy=pharmacy)  # Fetch the group using the group_id from the URL
+    context={
+            'drugs': drugs,
+            'form': form
+            }
+
+    return render(request, 'pharmacy/all_category.html',context)
+
+def add_category(request):
+    if request.method == 'POST':
+        form = CategoryForm(request.POST, request.FILES)  # Handle file upload for image
+        if form.is_valid():
+            category = form.save(commit=False)
+            category.save()
+            return redirect('category_list')  # Redirect to a category list view or any other view
+    else:
+        form = CategoryForm()
+    
+    context = {'form': form}
+    return render(request, 'pharmacy/add_category.html', context)
+
+
+# Edit Category (Admin)
+##@user_passes_test(is_admin)
+def edit_category(request, category_id):
+    category = Category.objects.get(id=category_id)
+    if request.method == 'POST':
+        form = CategoryForm(request.POST, request.FILES, instance=category)
         if form.is_valid():
             form.save()
-            return redirect('admin_dashboard')
+            return redirect('all_drugs')
+    else:
+        form = CategoryForm(instance=category)
+    return render(request, 'pharmacy/add_category.html', {'form': form})
+
+# Delete Category (Admin)
+##@user_passes_test(is_admin)
+def delete_category(request, category_id):
+    category = Category.objects.get(id=category_id)
+    category.delete()
+    return redirect('all_drugs')
+
+
+
+
+
+
+
+def all_sales(request):
+    pharmacy=request.user.pharmacy
+    if request.method == 'POST':
+        form = SaleForm(request.POST, request.FILES)  # Handle file upload for image
+        if form.is_valid():
+            sales = form.save(commit=False)
+            sales.pharmacy=pharmacy
+            sales.save()
+            return redirect('sales_list')  # Redirect to a sales list view or any other view
+    else:
+        form = SaleForm()
+
+    
+    drugs=Sale.objects.all().filter(pharmacy=pharmacy)# (Sales,pharmacy=pharmacy)  # Fetch the group using the group_id from the URL
+    context={
+            'drugs': drugs,
+            'form': form
+            }
+
+    return render(request, 'pharmacy/all_sales.html',context)
+
+def add_sales(request):
+    if request.method == 'POST':
+        form = SaleForm(request.POST, request.FILES)  # Handle file upload for image
+        if form.is_valid():
+            sales = form.save(commit=False)
+            sales.save()
+            return redirect('sales_list')  # Redirect to a sales list view or any other view
+    else:
+        form = SaleForm()
+    
+    context = {'form': form}
+    return render(request, 'pharmacy/add_sales.html', context)
+
+
+# Edit Sales (Admin)
+##@user_passes_test(is_admin)
+def edit_sales(request, sales_id):
+    sales = Sale.objects.get(id=sales_id)
+    if request.method == 'POST':
+        form = SaleForm(request.POST, request.FILES, instance=sales)
+        if form.is_valid():
+            form.save()
+            return redirect('all_drugs')
+    else:
+        form = SalesForm(instance=sales)
+    return render(request, 'pharmacy/add_sales.html', {'form': form})
+
+# Delete Sales (Admin)
+##@user_passes_test(is_admin)
+def delete_sales(request, sales_id):
+    sales = Sale.objects.get(id=sales_id)
+    sales.delete()
+    return redirect('all_drugs')
+
+
+
+
+
+
+
+def all_supplier(request):
+    pharmacy=request.user.pharmacy
+    if request.method == 'POST':
+        form = SupplierForm(request.POST, request.FILES)  # Handle file upload for image
+        if form.is_valid():
+            supplier = form.save(commit=False)
+            supplier.pharmacy=pharmacy
+            supplier.save()
+            return redirect('supplier_list')  # Redirect to a supplier list view or any other view
+    else:
+        form = SupplierForm()
+
+    
+    drugs=Supplier.objects.all().filter(pharmacy=pharmacy)# (Supplier,pharmacy=pharmacy)  # Fetch the group using the group_id from the URL
+    context={
+            'drugs': drugs,
+            'form': form
+            }
+
+    return render(request, 'pharmacy/all_supplier.html',context)
+
+def add_supplier(request):
+    if request.method == 'POST':
+        form = SupplierForm(request.POST, request.FILES)  # Handle file upload for image
+        if form.is_valid():
+            supplier = form.save(commit=False)
+            supplier.save()
+            return redirect('supplier_list')  # Redirect to a supplier list view or any other view
+    else:
+        form = SupplierForm()
+    
+    context = {'form': form}
+    return render(request, 'pharmacy/add_supplier.html', context)
+
+
+# Edit Supplier (Admin)
+##@user_passes_test(is_admin)
+def edit_supplier(request, supplier_id):
+    supplier = Supplier.objects.get(id=supplier_id)
+    if request.method == 'POST':
+        form = SupplierForm(request.POST, request.FILES, instance=supplier)
+        if form.is_valid():
+            form.save()
+            return redirect('all_drugs')
+    else:
+        form = SupplierForm(instance=supplier)
+    return render(request, 'pharmacy/add_supplier.html', {'form': form})
+
+# Delete Supplier (Admin)
+##@user_passes_test(is_admin)
+def delete_supplier(request, supplier_id):
+    supplier = Supplier.objects.get(id=supplier_id)
+    supplier.delete()
+    return redirect('all_drugs')
+
+
+
+
+
+
+
+
+
+def all_products(request):
+    pharmacy=request.user.pharmacy
+    if request.method == 'POST':
+        form = ProductForm(request.POST, request.FILES)  # Handle file upload for image
+        if form.is_valid():
+            product = form.save(commit=False)
+            product.save()
+            return redirect('product_list')  # Redirect to a product list view or any other view
     else:
         form = ProductForm()
-    return render(request, 'pharmacy/add_product.html', {'form': form})
+
+    
+    drugs=Product.objects.all().filter(pharmacy=pharmacy)# (Product,pharmacy=pharmacy)  # Fetch the group using the group_id from the URL
+    context={
+            'drugs': drugs,
+            'form': form
+            }
+
+    return render(request, 'pharmacy/all_drugs.html',context)
+
+def add_product(request):
+    if request.method == 'POST':
+        form = ProductForm(request.POST, request.FILES)  # Handle file upload for image
+        if form.is_valid():
+            product = form.save(commit=False)
+            product.save()
+            return redirect('product_list')  # Redirect to a product list view or any other view
+    else:
+        form = ProductForm()
+    
+    context = {'form': form}
+    return render(request, 'pharmacy/add_product.html', context)
+
 
 # Edit Product (Admin)
 ##@user_passes_test(is_admin)
@@ -278,17 +549,17 @@ def edit_product(request, product_id):
         form = ProductForm(request.POST, request.FILES, instance=product)
         if form.is_valid():
             form.save()
-            return redirect('admin_dashboard')
+            return redirect('all_drugs')
     else:
         form = ProductForm(instance=product)
-    return render(request, 'pharmacy/edit_product.html', {'form': form})
+    return render(request, 'pharmacy/add_product.html', {'form': form})
 
 # Delete Product (Admin)
 ##@user_passes_test(is_admin)
 def delete_product(request, product_id):
     product = Product.objects.get(id=product_id)
     product.delete()
-    return redirect('admin_dashboard')
+    return redirect('all_drugs')
 
 
 
@@ -359,24 +630,16 @@ def approve_reversal(request, reversal_id):
     return redirect('list_sales')
 
 
-#@user_passes_test(is_admin)
-def add_supplier(request):
-    if request.method == 'POST':
-        name = request.POST['name']
-        contact = request.POST['contact']
-        email = request.POST['email']
-        Supplier.objects.create(name=name, contact=contact, email=email)
-        return redirect('admin_dashboard')
-    return render(request, 'pharmacy/add_supplier.html')
-
-#@user_passes_test(is_admin)
-def list_suppliers(request):
-    suppliers = Supplier.objects.all()
-    return render(request, 'pharmacy/list_suppliers.html', {'suppliers': suppliers})
-
 
 #@user_passes_test(is_admin)
 def sales_report(request):
     # Filter sales by date or month
     sales = Sale.objects.all()
     return render(request, 'pharmacy/sales_report.html', {'sales': sales})
+
+def about_us(request):
+    return render(request, 'pharmacy/about_us.html')
+
+def financial_statement(request):
+    return render(request, 'pharmacy/financial_statement.html')
+

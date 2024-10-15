@@ -1,0 +1,67 @@
+{% extends 'pharmacy/base/base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block content %}
+        <div class="container">
+          <div class="page-inner">
+            <div class="page-header">
+              <h3 class="fw-bold mb-3">ABOUT US</h3>
+              <ul class="breadcrumbs mb-3">
+                <li class="nav-home">
+                  <a href="{% url 'index' %}">
+                    <i class="icon-home">&nbspDashboard</i>
+                  </a>
+                </li>
+                <li class="separator">
+                  <i class="icon-arrow-right"></i>
+                </li>
+
+                <li class="separator">
+                  <i class="icon-arrow-right"></i>
+                </li>
+              </ul>
+            </div>
+            <div class="row">
+              <div class="col-md-12">
+                <div class="card">
+                  <div class="card-header">
+                    <div class="d-flex align-items-center">
+                      <h4 class="card-title">About LECZ-PharmaSuite(LPS)</h4>
+                      <a href="{% url 'add_category' %}" 
+                        class="btn btn-danger btn-round ms-auto"
+                        data-bs-toggle="modal"
+                        data-bs-target="#addRowModal"
+                      >
+                        <i class="fa fa-plus"></i>
+                        Subscribe
+                      </a>
+                    </div>
+                  </div>
+                  <div class="container">
+        <h2>About Us</h2>
+        <p>Welcome to <strong>LECZ-PharmaSuite (LPS)</strong>, the ultimate software solution designed to revolutionize the way pharmacies are managed. Built with precision, innovation, and the needs of modern pharmacists in mind, LPS offers an all-in-one platform that simplifies your pharmacy’s operations while maximizing profitability.</p>
+        
+        <p><strong>LECZ-PharmaSuite</strong> brings unparalleled efficiency to your business, streamlining inventory management, prescription handling, and automated accounting—all in one powerful system. Whether you are managing stock, processing orders, or tracking sales and expenses, LPS ensures that every aspect of your pharmacy runs seamlessly, giving you more time to focus on what really matters: your customers.</p>
+
+        <p>With an annual subscription of just <strong>UGX 500,000</strong>, LPS delivers premium features at an unbeatable price. Our cutting-edge automation tools reduce the burden of manual tasks, prevent costly errors, and help you stay ahead of the competition. By leveraging real-time data, you’ll be equipped to make informed decisions that drive growth and increase your profits.</p>
+
+        <h3>Why choose LECZ-PharmaSuite?</h3>
+        <ul>
+            <li><strong>Automated Accounting</strong>: Accurate financial reports at your fingertips, without the hassle.</li>
+            <li><strong>Streamlined Inventory</strong>: Never miss a restock and prevent losses from expired or unsold drugs.</li>
+            <li><strong>User-Friendly Interface</strong>: Manage your pharmacy with ease, even if you're not tech-savvy.</li>
+            <li><strong>Comprehensive Sales Tracking</strong>: Get real-time insights into your sales and stock performance.</li>
+            <li><strong>Affordable & Efficient</strong>: Save time, cut costs, and boost profits—all for a low annual fee.</li>
+        </ul>
+
+        <p>Join countless other successful pharmacies who trust <strong>LECZ-PharmaSuite</strong> to take their business to the next level. With LPS, you’re not just managing your pharmacy—you’re optimizing it for <strong>maximum profit and success</strong>.</p>
+
+        <p>Make the smart choice today. <strong>LECZ-PharmaSuite</strong> is the future of pharmacy management!</p>
+    </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+{% endblock %}

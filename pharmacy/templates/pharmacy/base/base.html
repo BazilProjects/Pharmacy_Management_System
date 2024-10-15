@@ -26,7 +26,7 @@
             "Font Awesome 5 Brands",
             "simple-line-icons",
           ],
-          urls: ["static/assets/css/fonts.min.css"],
+          urls: ["/static/assets/css/fonts.min.css"],
         },
         active: function () {
           sessionStorage.fonts = true;
@@ -75,25 +75,13 @@
           <div class="sidebar-content">
             <ul class="nav nav-secondary">
               <li class="nav-item active">
-                <a
-                  data-bs-toggle="collapse"
-                  href="#dashboard"
-                  class="collapsed"
-                  aria-expanded="false"
+                <a   
+                  href="/"
                 >
                   <i class="fas fa-home"></i>
                   <p>Dashboard</p>
-                  <span class="caret"></span>
                 </a>
-                <div class="collapse" id="dashboard">
-                  <ul class="nav nav-collapse">
-                    <li>
-                      <a href="../demo1/index.html">
-                        <span class="sub-item">Dashboard 1</span>
-                      </a>
-                    </li>
-                  </ul>
-                </div>
+
               </li>
               <li class="nav-section">
                 <span class="sidebar-mini-icon">
@@ -102,14 +90,14 @@
                 <h4 class="text-section">Components</h4>
               </li>
               <li class="nav-item">
-                <a data-bs-toggle="collapse" href="#base">
+                <a href="{% url 'add_product' %}">
                   <i class="fas fa-pills"></i>
                   <p>Add Drug</p>
 
                 </a>
               </li>
               <li class="nav-item">
-                <a data-bs-toggle="collapse" href="#sidebarLayouts">
+                <a href="{% url 'all_drugs' %}">
                   <i class="fas fa-prescription-bottle"></i>
                   <p>All Drugs</p>
 
@@ -117,9 +105,23 @@
 
               </li>
               <li class="nav-item">
+                <a href="{% url 'all_categories' %}">
+                  <i class="fas fa-tags"></i>
+                  <p>Drug Categories</p>
+                </a>
+
+              </li>
+              <li class="nav-item">
                 <a data-bs-toggle="collapse" href="#forms">
                   <i class="fas fa-user-md"></i>
-                  <p>Add Pharmarcist</p>
+                  <p>Pharmarcist(Sales Person)</p>
+                  
+                </a>
+              </li>
+              <li class="nav-item">
+                <a  href="{% url 'all_pharmacy' %}">
+                  <i class="fas fa-prescription-bottle-alt"></i>
+                  <p>My Store(Pharmacies)</p>
                   
                 </a>
               </li>
@@ -137,17 +139,23 @@
                       </a>
                     </li>
                     <li>
-                      <a href="tables/datatables.html">
-                        <span class="sub-item">Balance Sheet</span>
+                      <a href="{% url 'financial_statement' %}">
+                        <span class="sub-item">Financial Statement</span>
                       </a>
                     </li>
                   </ul>
                 </div>
               </li>
               <li class="nav-item">
-                <a data-bs-toggle="collapse" href="#maps">
+                <a href="{% url 'all_supplier' %}">
                   <i class="fas fa-truck"></i>
-                  <p>Add Supplier</p>
+                  <p>All Suppliers</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{% url 'all_sale' %}">
+                  <i class="fas fa-shopping-cart"></i>
+                  <p>All Sales</p>
                 </a>
               </li>
               <li class="nav-item">
@@ -172,20 +180,13 @@
                 </div>
               </li>
               <li class="nav-item">
-                <a href="widgets.html">
-                  <i class="fas fa-desktop"></i>
-                  <p>Widgets</p>
-                  <span class="badge badge-success">4</span>
-                </a>
-              </li>
-              <li class="nav-item">
                 <a href="../../documentation/index.html">
                   <i class="fas fa-headphones"></i>
                   <p>Support/Contact Us</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a data-bs-toggle="collapse" href="#submenu">
+                <a href="{% url 'about_us' %}">
                   <i class="fas fa-info-circle"></i>
                   <p>About Us</p>
                 </a>
@@ -514,17 +515,23 @@
                   </a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" href="#"> Help </a>
+                  <a class="nav-link" href="mailto:support-pharmasuite@lecz.ltd"> Help </a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" href="#"> Licenses </a>
+                  <a class="nav-link" href="https://lecz.ltd/#mh-carrier"> Licenses </a>
                 </li>
               </ul>
             </nav>
             <div class="copyright">
-              2024, made with <i class="fa fa-copyright"></i> by
-              <a href="https://lecz.ltd">LECZ(U) LIMITED</a>
+              <i class="fa fa-copyright"></i>
+                <span id="currentYear"></span>, made by
+                <a href="https://lecz.ltd">LECZ(U) LIMITED</a>
             </div>
+
+            <script>
+                document.getElementById("currentYear").textContent = new Date().getFullYear();
+            </script>
+
             <div>
               Distributed by
               <a target="_blank" href="https://lecz.ltd">LECZ(U) LIMITED</a>.

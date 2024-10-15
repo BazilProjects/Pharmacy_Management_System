@@ -1,0 +1,225 @@
+{% extends 'pharmacy/base/base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block content %}
+        <div class="container">
+          <div class="page-inner">
+            <div class="page-header">
+              <h3 class="fw-bold mb-3">Accounts</h3>
+              <ul class="breadcrumbs mb-3">
+                <li class="nav-home">
+                  <a href="{% url 'index' %}">
+                    <i class="icon-home">&nbspDashboard</i>
+                  </a>
+                </li>
+                <li class="separator">
+                  <i class="icon-arrow-right"></i>
+                </li>
+              </ul>
+            </div>
+            
+            <div class="row">
+              <div class="col-md-12">
+                <div class="card">
+                  <div class="card-header">
+                    <div class="d-flex align-items-center">
+                      <h4 class="card-title">Accounting Summary</h4>
+                      <a href="{% url 'add_category' %}" 
+                        class="btn btn-danger btn-round ms-auto"
+                        data-bs-toggle="modal"
+                        data-bs-target="#addRowModal"
+                      >
+                        <i class="fa fa-plus"></i>
+                        Subscribe
+                      </a>
+                    </div>
+                  </div>
+                  <div class="container">
+                    <h2 style="text-align: center;"><u>Financial Statement</u></h2>
+
+                    <!-- Income Statement -->
+                    <div class="income-expenses">
+                      <h3><u>Income Statement</u></h3>
+
+                      <!-- Income Table -->
+                      <div class="section">
+                          <h4><u>Income</u></h4>
+                          <div class="table-responsive">
+                            <table
+                              id="add-row"
+                              class="display table table-striped table-hover"
+                            >
+                              <tr>
+                                  <th>Source</th>
+                                  <th>Amount</th>
+                              </tr>
+                              <tr>
+                                  <td>Salary</td>
+                                  <td>$</td>
+                              </tr>
+                              <tr>
+                                  <td>Passive Income (Real Estate, Dividends, etc.)</td>
+                                  <td>$</td>
+                              </tr>
+                              <tr>
+                                  <td>Business Income</td>
+                                  <td>$</td>
+                              </tr>
+                              <tr>
+                                  <th>Total Income</th>
+                                  <td>$</td>
+                              </tr>
+                          </table>
+                        </div>
+                      </div>
+                      <br>
+                    </div>
+                  </div>
+                  <div class="container">
+                    <div class="income-expenses">
+                      <div class="section">
+                          <h4><u>Expenses</u></h4>
+                          <div class="table-responsive">
+                            <table
+                              id="add-row"
+                              class="display table table-striped table-hover"
+                            >
+                              <tr>
+                                  <th>Source</th>
+                                  <th>Amount</th>
+                              </tr>
+                              <tr>
+                                  <td>Salary</td>
+                                  <td>$</td>
+                              </tr>
+                              <tr>
+                                  <td>Passive Income (Real Estate, Dividends, etc.)</td>
+                                  <td>$</td>
+                              </tr>
+                              <tr>
+                                  <td>Business Income</td>
+                                  <td>$</td>
+                              </tr>
+                              <tr>
+                                  <th>Total Income</th>
+                                  <td>$</td>
+                              </tr>
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  </div>
+                </div>
+
+            </div>
+            <div class="row">
+              <div class="col-md-12">
+                <div class="card">
+                  <div class="card-header">
+
+                    <h2 style="text-align: center;"><u>Financial Statement</u></h2>
+
+                    <!-- Income Statement -->
+                    <div class="income-expenses">
+                      <h3><u>Balance Sheet</u></h3>
+
+                      <!-- Income Table -->
+                      <div class="section">
+                          <h4><u>Assets</u></h4>
+                          <div class="table-responsive">
+                            <table
+                              id="add-row"
+                              class="display table table-striped table-hover"
+                            >
+                              <tr>
+                                  <th>Source</th>
+                                  <th>Amount</th>
+                              </tr>
+                              <tr>
+                                  <td>Salary</td>
+                                  <td>$</td>
+                              </tr>
+                              <tr>
+                                  <td>Passive Income (Real Estate, Dividends, etc.)</td>
+                                  <td>$</td>
+                              </tr>
+                              <tr>
+                                  <td>Business Income</td>
+                                  <td>$</td>
+                              </tr>
+                              <tr>
+                                  <th>Total Income</th>
+                                  <td>$</td>
+                              </tr>
+                          </table>
+                        </div>
+                      </div>
+                      <br>
+                      <div class="section">
+                          <h4><u>Liabilities</u></h4>
+                          <div class="table-responsive">
+                            <table
+                              id="add-row"
+                              class="display table table-striped table-hover"
+                            >
+                              <tr>
+                                  <th>Source</th>
+                                  <th>Amount</th>
+                              </tr>
+                              <tr>
+                                  <td>Salary</td>
+                                  <td>$</td>
+                              </tr>
+                              <tr>
+                                  <td>Passive Income (Real Estate, Dividends, etc.)</td>
+                                  <td>$</td>
+                              </tr>
+                              <tr>
+                                  <td>Business Income</td>
+                                  <td>$</td>
+                              </tr>
+                              <tr>
+                                  <th>Total Income</th>
+                                  <td>$</td>
+                              </tr>
+                          </table>
+                        </div>
+                  </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-12">
+                <div class="card">
+                  <div class="card-header">
+
+                    <h2 style="text-align: center;"><u>Monthly Cash Flow</u></h2>
+
+                    <!-- Income Statement -->
+                    <div class="income-expenses">
+                      <!-- Income Table -->
+                      <div class="section">
+                          <div class="table-responsive">
+                            <table id="add-row" class="display table table-striped table-hover">
+                                <tr>
+                                    <th>Total Income</th>
+                                    <td>$</td>
+                                </tr>
+                                <tr>
+                                  <td>Salary</td>
+                                  <td>$</td>
+                              </tr>
+                            </table>
+
+                      </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+{% endblock %}
