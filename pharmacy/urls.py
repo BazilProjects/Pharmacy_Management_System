@@ -3,6 +3,9 @@ from . import views
 
 urlpatterns = [
     path('', views.index, name='index'),
+    path('all_sales_person', views.all_sales_person, name='all_sales_person'),
+    path('sales-data/', views.sales_data, name='sales_data'),
+
     path('financial_statement', views.financial_statement, name='financial_statement'),
     path('all_drugs', views.all_products, name='all_drugs'),
     path('add-product/', views.add_product, name='add_product'),

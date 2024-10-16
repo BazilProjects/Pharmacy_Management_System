@@ -1,0 +1,151 @@
+{% extends 'pharmacy/base/base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block content %}
+        <div class="container">
+          <div class="page-inner">
+            <div class="page-header">
+              <h3 class="fw-bold mb-3">All Sales Persons</h3>
+              <ul class="breadcrumbs mb-3">
+                <li class="nav-home">
+                  <a href="{% url 'index' %}">
+                    <i class="icon-home">&nbspDashboard</i>
+                  </a>
+                </li>
+                <li class="separator">
+                  <i class="icon-arrow-right"></i>
+                </li>
+                <li class="nav-item">
+                  <a href="{% url 'add_pharmacy' %}">Add Sales Person</a>
+                </li>
+                <li class="separator">
+                  <i class="icon-arrow-right"></i>
+                </li>
+              </ul>
+            </div>
+            <div class="row">
+              <div class="col-md-12">
+                <div class="card">
+                  <div class="card-header">
+                    <div class="d-flex align-items-center">
+                      <h4 class="card-title">All Sales Persons</h4>
+                      <a href="{% url 'add_pharmacy' %}" 
+                        class="btn btn-primary btn-round ms-auto"
+                        data-bs-toggle="modal"
+                        data-bs-target="#addRowModal"
+                      >
+                        <i class="fa fa-plus"></i>
+                        Add Sales Person
+                      </a>
+                    </div>
+                  </div>
+                  <div class="card-body">
+                    <!-- Modal -->
+                    <div
+                      class="modal fade"
+                      id="addRowModal"
+                      tabindex="-1"
+                      role="dialog"
+                      aria-hidden="true"
+                    >
+                      <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                          <div class="modal-header border-0">
+                            <h5 class="modal-title">
+                              <span class="fw-mediumbold"> LECZ-</span>
+                              <span class="fw-light">PharmaSuite(LPS) </span>
+                            </h5>
+                            <button
+                              type="button"
+                              class="close"
+                              data-dismiss="modal"
+                              aria-label="Close"
+                            >
+                              <span aria-hidden="true">&times;</span>
+                            </button>
+                          </div>
+                          <div class="modal-body">
+                            <p class="small">
+                              Add a New Sales Person
+                            </p>
+                            <form method="POST" action="{% url 'add_pharmacy' %}">
+
+                                    {% csrf_token %}
+                                    {{ form|crispy }}
+                                    <div class="card-footer">
+                                      <button class="btn btn-primary w-100" type="submit">
+                                        <b>Add Sales Person</b>
+                                      </button>
+                                    </div>
+
+                            </form>
+
+                          </div>
+                          <!--
+                          <div class="modal-footer border-0">
+                            <button
+                              type="button"
+                              id="addRowButton"
+                              class="btn btn-primary"
+                            >
+                              Add
+                            </button>
+                            <button
+                              type="button"
+                              class="btn btn-danger"
+                              data-dismiss="modal"
+                            >
+                              Close
+                            </button>
+                          </div>
+                        -->
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="table-responsive">
+                      <table
+                        id="add-row"
+                        class="display table table-striped table-hover"
+                      >
+                        <thead>
+                          <tr>
+                            <th>Name</th>
+                            <th>Location</th>
+                            <th style="width: 10%">Edit</th>
+                            <th style="width: 10%">Delete</th>
+                          </tr>
+                        </thead>
+
+                        <tbody>
+                          {% for item in results %}
+                            <tr>
+                                <td>{{ item.pharmacy.name }}</td>
+                                <td>{{ item.pharmacy.location }}</td>
+                                <td>
+                                    <ul>
+                                        {% for user in item.users %}
+                                            <li>{{ user.username }}</li>  <!-- Adjust this based on your user model -->
+                                        {% empty %}
+                                            <li>No users found.</li>
+                                        {% endfor %}
+                                    </ul>
+                                </td>
+                            </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="3">No pharmacies found.</td>
+                                </tr>
+                            {% endfor %}      
+
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+{% endblock %}

@@ -112,7 +112,7 @@
 
               </li>
               <li class="nav-item">
-                <a data-bs-toggle="collapse" href="#forms">
+                <a href="{% url 'all_sales_person' %}">
                   <i class="fas fa-user-md"></i>
                   <p>Pharmarcist(Sales Person)</p>
                   
@@ -771,33 +771,61 @@
     <!-- Kaiadmin DEMO methods, don't include it in your project! -->
     <script src="{% static 'assets/js/setting-demo.js' %}"></script>
     <script src="{% static 'assets/js/demo.js' %}"></script>
-    <script>
-      $("#lineChart").sparkline([102, 109, 120, 99, 110, 105, 115], {
-        type: "line",
-        height: "70",
-        width: "100%",
-        lineWidth: "2",
-        lineColor: "#177dff",
-        fillColor: "rgba(23, 125, 255, 0.14)",
-      });
+ <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Fetch sales data from the Django view API
+            fetch("{% url 'sales_data' %}")  // Update with your URL mapping name 'sales_data'
+                .then(response => response.json())
+                .then(data => {
+                    // Get the canvas element where we want to display the chart
+                    var ctx = document.getElementById("salesBarChart").getContext("2d");
 
-      $("#lineChart2").sparkline([99, 125, 122, 105, 110, 124, 115], {
-        type: "line",
-        height: "70",
-        width: "100%",
-        lineWidth: "2",
-        lineColor: "#f3545d",
-        fillColor: "rgba(243, 84, 93, .14)",
-      });
-
-      $("#lineChart3").sparkline([105, 103, 123, 100, 95, 105, 115], {
-        type: "line",
-        height: "70",
-        width: "100%",
-        lineWidth: "2",
-        lineColor: "#ffa534",
-        fillColor: "rgba(255, 165, 52, .14)",
-      });
+                    // Create the bar chart using fetched data
+                    var myBarChart = new Chart(ctx, {
+                        type: "bar",
+                        data: {
+                            labels: data.labels,  // Dynamic labels from the server (e.g., ['2024-10-10', '2024-10-11', ...])
+                            datasets: [{
+                                label: "Total Sales per Day",
+                                backgroundColor: "rgba(23, 125, 255, 0.6)",
+                                borderColor: "rgb(23, 125, 255)",
+                                borderWidth: 1,
+                                data: data.data  // Dynamic sales data from the server
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    title: {
+                                        display: true,
+                                        text: 'Total Sales (UGX)'
+                                    }
+                                },
+                                x: {
+                                    title: {
+                                        display: true,
+                                        text: 'Date'
+                                    }
+                                }
+                            },
+                            plugins: {
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            return 'UGX ' + context.parsed.y.toLocaleString();
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                })
+                .catch(error => console.error('Error:', error));  // Log any errors if fetch fails
+        });
     </script>
+
   </body>
 </html>

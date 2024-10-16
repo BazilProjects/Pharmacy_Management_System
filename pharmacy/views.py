@@ -22,6 +22,18 @@ from .models import User, Group
 # views.py
 from django.contrib.auth.decorators import login_required
 from .forms import ProductForm
+from django.http import JsonResponse
+
+def sales_data(request):
+    sales_per_day = Sale.objects.values('date_of_sale').annotate(total_sales=Sum('total_price'))
+    
+    # Format the data as JSON
+    sales_data = {
+        "labels": [entry['date_of_sale'].strftime('%b %d') for entry in sales_per_day],  # e.g., 'Oct 12'
+        "data": [entry['total_sales'] for entry in sales_per_day]
+    }
+    
+    return JsonResponse(sales_data)
 
 def admin_signup(request):
     if request.method == 'POST':
@@ -121,20 +133,20 @@ def index(request):
     # Retrieve all Sale objects
 
 
-    sales =Sale.objects.all()# Sale.objects.filter(product__pharmacy=request.user.pharmacy)
+    sales = Sale.objects.all().filter(date_of_sale =today)  # Get all sales
+    sales_count = sales.count()  # Get the total count of sales
 
+    total_sales_price = sales.aggregate(Sum('total_price'))['total_price__sum'] or 0
     pharmacy = request.user.pharmacy
 
     total_sales, total_revenue = get_today_sales_and_revenue(pharmacy)
-
-    context = {
+    context={
         'total_sales': total_sales,
+        'total_sales_price':total_sales_price,
         'total_revenue': total_revenue,
-    }
-    
-    context = {
+        'sales': sales,          # Pass the sales queryset to the template
+        'sales_count': sales_count,  ## Sale.objects.filter(product__pharmacy=request.user.pharmacy)
 
-        'sales': sales,
         'current_month_revenue': current_month_revenue,
         'current_month_gross_profit': current_month_gross_profit,
         'current_month_net_profit': current_month_net_profit,
@@ -164,7 +176,27 @@ def create_pharmacy(request):
         return redirect('no_permission')  # Salesperson shouldn't be able to create a pharmacy
 
 
+def all_sales_person(request):
+    pharmacies = Pharmacy.objects.filter(created_by=request.user)
 
+    # Step 2: Initialize a list to hold the results
+    results = []
+
+    # Step 3: Loop through each pharmacy and filter users
+    for pharmacy in pharmacies:
+        # Get users with role 'sole' associated with the pharmacy
+        users = User.objects.filter(role='sole', pharmacy=pharmacy)
+
+        # Combine the pharmacy with its users
+        results.append({
+            'pharmacy': pharmacy,
+            'users': users
+        })# (Pharmacys,pharmacy=pharmacy)  # Fetch the group using the group_id from the URL
+    context={
+            'results': results
+            }
+
+    return render(request, 'pharmacy/all_sales_person.html',context)
 
 def all_pharmacy(request):
     #pharmacy=request.user.pharmacy

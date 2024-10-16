@@ -213,11 +213,14 @@
                       </div>
                     </div>
                   </div>
-                  <div class="card-body">
+
+                    <div style="width: 600px; height: 400px;">
+                      <canvas id="salesLineChart"></canvas>
+                                      <!--
                     <div class="chart-container" style="min-height: 375px">
                       <canvas id="statisticsChart"></canvas>
                     </div>
-                    <div id="myChartLegend"></div>
+                    <div id="myChartLegend"></div>-->
                   </div>
                 </div>
               </div>
@@ -226,36 +229,12 @@
                   <div class="card-header">
                     <div class="card-head-row">
                       <div class="card-title">Today's Sales</div>
-                      <div class="card-tools">
-                        <div class="dropdown">
-                          <button
-                            class="btn btn-sm btn-label-light dropdown-toggle"
-                            type="button"
-                            id="dropdownMenuButton"
-                            data-bs-toggle="dropdown"
-                            aria-haspopup="true"
-                            aria-expanded="false"
-                          >
-                            Export
-                          </button>
-                          <div
-                            class="dropdown-menu"
-                            aria-labelledby="dropdownMenuButton"
-                          >
-                            <a class="dropdown-item" href="#">Action</a>
-                            <a class="dropdown-item" href="#">Another action</a>
-                            <a class="dropdown-item" href="#"
-                              >Something else here</a
-                            >
-                          </div>
-                        </div>
-                      </div>
                     </div>
-                    <div class="card-category">March 25 - April 02</div>
+                    <div class="card-category">{{sales_count}} &nbsp Products sold today</div>
                   </div>
                   <div class="card-body pb-0">
                     <div class="mb-4 mt-2">
-                      <h1>$4,578.58</h1>
+                      <h1>UGX &nbsp {{total_sales_price}}</h1>
                     </div>
                     <div class="pull-in">
                       <canvas id="dailySalesChart"></canvas>
@@ -401,4 +380,59 @@
             </div>
           </div>
         </div>
+         <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Fetch sales data from the Django view API
+            fetch("{% url 'sales_data' %}")  // Update with your URL mapping name 'sales_data'
+                .then(response => response.json())
+                .then(data => {
+                    // Get the canvas element where we want to display the chart
+                    var ctx = document.getElementById("salesBarChart").getContext("2d");
+
+                    // Create the bar chart using fetched data
+                    var myBarChart = new Chart(ctx, {
+                        type: "bar",
+                        data: {
+                            labels: data.labels,  // Dynamic labels from the server (e.g., ['2024-10-10', '2024-10-11', ...])
+                            datasets: [{
+                                label: "Total Sales per Day",
+                                backgroundColor: "rgba(23, 125, 255, 0.6)",
+                                borderColor: "rgb(23, 125, 255)",
+                                borderWidth: 1,
+                                data: data.data  // Dynamic sales data from the server
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    title: {
+                                        display: true,
+                                        text: 'Total Sales (UGX)'
+                                    }
+                                },
+                                x: {
+                                    title: {
+                                        display: true,
+                                        text: 'Date'
+                                    }
+                                }
+                            },
+                            plugins: {
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            return 'UGX ' + context.parsed.y.toLocaleString();
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                })
+                .catch(error => console.error('Error:', error));  // Log any errors if fetch fails
+        });
+    </script>
 {% endblock %}
