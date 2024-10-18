@@ -19,6 +19,10 @@ class SaleForm(forms.ModelForm):
     class Meta:
         model = Sale
         fields = ['product', 'quantity']
+    # Optionally, override the init method to customize the form behavior if needed
+    def __init__(self, *args, **kwargs):
+        super(SaleForm, self).__init__(*args, **kwargs)
+        self.fields['product'].widget.attrs.update({'class': 'form-control'})
 class PharmacyForm(forms.ModelForm):
     class Meta:
         model = Pharmacy
@@ -39,11 +43,11 @@ from django.core.exceptions import ValidationError
         model = User
         fields = ['username', 'email','password','password2']
 """
-class CustomAdminSignUpForm(forms.Form):
-    username = forms.CharField(max_length=150, required=True)
-    email = forms.EmailField(required=True)
-    password = forms.CharField(widget=forms.PasswordInput, required=True)
-    password2 = forms.CharField(widget=forms.PasswordInput, label="Confirm Password", required=True)
+class CustomAdminSignUpForm(AuthenticationForm):#forms.Form):
+    username = forms.CharField(max_length=150, required=True,widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Username'}))
+    email = forms.EmailField(required=True,widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Email'}))
+    password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Password'}), required=True)
+    password2 = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Confirm Password'}), label=None, required=True)
 
     def clean_username(self):
         username = self.cleaned_data.get('username')
@@ -85,7 +89,7 @@ class ProductForm(forms.ModelForm):
 
 class CategoryForm(forms.ModelForm):
     class Meta:
-        model = Product
+        model = Category
         fields = ['name']
 
 
@@ -97,6 +101,7 @@ class SupplierForm(forms.ModelForm):
 
 
 
+"""
 class SaleForm(forms.ModelForm):
     class Meta:
         model = Sale
@@ -110,6 +115,7 @@ class SaleForm(forms.ModelForm):
         self.fields['total_price'].widget.attrs.update({'class': 'form-control'})
         self.fields['salesperson'].widget.attrs.update({'class': 'form-control'})
         self.fields['order_status'].widget.attrs.update({'class': 'form-control'})
+"""
 """
 class SaleForm(forms.ModelForm):
     class Meta:

@@ -77,10 +77,10 @@
               {% if user.is_authenticated %}
               <li class="nav-item active">
                 <a   
-                  href="/"
+                  href="{% url 'salesperson_dashboard' %}"
                 >
-                  <i class="fas fa-home"></i>
-                  <p>Dashboard</p>
+                  <i class="fas fa-store"></i>
+                  <p>Point of Sale</p>
                 </a>
 
               </li>
@@ -93,14 +93,14 @@
               <li class="nav-item">
                 <a href="{% url 'add_product' %}">
                   <i class="fas fa-pills"></i>
-                  <p>Add Drug</p>
+                  <p>Add Drug (New Stock)</p>
 
                 </a>
               </li>
               <li class="nav-item">
                 <a href="{% url 'all_drugs' %}">
                   <i class="fas fa-prescription-bottle"></i>
-                  <p>All Drugs</p>
+                  <p>All Drugs (All Current Stock)</p>
 
                 </a>
 
@@ -110,81 +110,12 @@
                   <i class="fas fa-tags"></i>
                   <p>Drug Categories</p>
                 </a>
-
-              </li>
-              <li class="nav-item">
-                <a href="{% url 'all_sales_person' %}">
-                  <i class="fas fa-user-md"></i>
-                  <p>Pharmarcist(Sales Person)</p>
-                  
-                </a>
-              </li>
-              <li class="nav-item">
-                <a  href="{% url 'all_pharmacy' %}">
-                  <i class="fas fa-prescription-bottle-alt"></i>
-                  <p>My Store(Pharmacies)</p>
-                  
-                </a>
-              </li>
-              <li class="nav-item">
-                <a data-bs-toggle="collapse" href="#tables">
-                  <i class="fas fa-calculator"></i>
-                  <p>Accounting</p>
-                  <span class="caret"></span>
-                </a>
-                <div class="collapse" id="tables">
-                  <ul class="nav nav-collapse">
-                    <li>
-                      <a href="tables/tables.html">
-                        <span class="sub-item">Sales and Transaction Report</span>
-                      </a>
-                    </li>
-                    <li>
-                      <a href="{% url 'financial_statement' %}">
-                        <span class="sub-item">Financial Statement</span>
-                      </a>
-                    </li>
-                  </ul>
-                </div>
-              </li>
-              <li class="nav-item">
-                <a href="{% url 'all_supplier' %}">
-                  <i class="fas fa-truck"></i>
-                  <p>All Suppliers</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="{% url 'all_sale' %}">
-                  <i class="fas fa-shopping-cart"></i>
-                  <p>All Sales</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a data-bs-toggle="collapse" href="#charts">
-                  <i class="far fa-credit-card"></i>
-                  <p>Billing and Subscription</p>
-                  <span class="caret"></span>
-                </a>
-                <div class="collapse" id="charts">
-                  <ul class="nav nav-collapse">
-                    <li>
-                      <a href="charts/charts.html">
-                        <span class="sub-item">Add Credit/Debit Card</span>
-                      </a>
-                    </li>
-                    <li>
-                      <a href="charts/sparkline.html">
-                        <span class="sub-item">Subscribe</span>
-                      </a>
-                    </li>
-                  </ul>
-                </div>
               </li>
 
               {% else %}
               <li class="nav-item active">
                 <a   
-                  href="/"
+                  href="{% url 'salesperson_dashboard' %}"
                 >
                   <i class="fas fa-home"></i>
                   <p>Home</p>

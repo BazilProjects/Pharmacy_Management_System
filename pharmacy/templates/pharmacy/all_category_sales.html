@@ -1,11 +1,11 @@
-{% extends 'pharmacy/base/base.html' %}
+{% extends 'pharmacy/base/base_sales_person.html' %}
 {% load static %}
 {% load crispy_forms_tags %}
 {% block content %}
         <div class="container">
           <div class="page-inner">
             <div class="page-header">
-              <h3 class="fw-bold mb-3">All Drug Supplier</h3>
+              <h3 class="fw-bold mb-3">All Drug Category</h3>
               <ul class="breadcrumbs mb-3">
                 <li class="nav-home">
                   <a href="{% url 'dashboard' %}">
@@ -16,7 +16,7 @@
                   <i class="icon-arrow-right"></i>
                 </li>
                 <li class="nav-item">
-                  <a href="{% url 'add_supplier' %}">Add Drug Supplier</a>
+                  <a href="{% url 'add_category' %}">Add Drug Category</a>
                 </li>
                 <li class="separator">
                   <i class="icon-arrow-right"></i>
@@ -28,14 +28,14 @@
                 <div class="card">
                   <div class="card-header">
                     <div class="d-flex align-items-center">
-                      <h4 class="card-title">All Supplier</h4>
-                      <a href="{% url 'add_supplier' %}" 
+                      <h4 class="card-title">All Category</h4>
+                      <a href="{% url 'add_category' %}" 
                         class="btn btn-primary btn-round ms-auto"
                         data-bs-toggle="modal"
                         data-bs-target="#addRowModal"
                       >
                         <i class="fa fa-plus"></i>
-                        Add Supplier
+                        Add Category
                       </a>
                     </div>
                   </div>
@@ -66,15 +66,15 @@
                           </div>
                           <div class="modal-body">
                             <p class="small">
-                              Add a New Supplier
+                              Add a New Category
                             </p>
-                            <form method="POST" action="{% url 'add_supplier' %}">
+                            <form method="POST" action="{% url 'add_category' %}">
 
                                     {% csrf_token %}
                                     {{ form|crispy }}
                                     <div class="card-footer">
                                       <button class="btn btn-primary w-100" type="submit">
-                                        <b>Add Supplier</b>
+                                        <b>Add Category</b>
                                       </button>
                                     </div>
 
@@ -111,8 +111,6 @@
                         <thead>
                           <tr>
                             <th>Name</th>
-                            <th>Contact</th>
-                            <th>Email</th>
                             <th style="width: 10%">Edit</th>
                             <th style="width: 10%">Delete</th>
                           </tr>
@@ -122,11 +120,9 @@
                           {% for drug in drugs %}
                           <tr>
                             <td>{{ drug.name}}</td>
-                            <td>{{ drug.contact}}</td>
-                            <td>{{ drug.email}}</td>
                             <td>
                               <div class="form-button-action">
-                                <a href="{% url 'edit_supplier' drug.id %}" 
+                                <a href="{% url 'edit_category' drug.id %}" 
                                   type="button"
                                   data-bs-toggle="tooltip"
                                   title=""
@@ -139,7 +135,7 @@
                             </td>
                             <td>
                               <div class="form-button-action">
-                                <a href="{% url 'delete_supplier' drug.id %}" 
+                                <a href="{% url 'delete_category' drug.id %}" 
                                   type="button"
                                   data-bs-toggle="tooltip"
                                   title=""

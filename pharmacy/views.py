@@ -24,6 +24,7 @@ from django.contrib.auth.decorators import login_required
 from .forms import ProductForm
 from django.http import JsonResponse
 
+@login_required
 def sales_data(request):
     sales_per_day = Sale.objects.values('date_of_sale').annotate(total_sales=Sum('total_price'))
     
@@ -43,11 +44,12 @@ def admin_signup(request):
             user.role = 'admin'  # Assign the role from the URL parameter
             user.save()
             login(request, user)  # Log the user in after registration
-            return redirect('index')  # Redirect to some admin dashboard after sign-up
+            return redirect('dashboard')  # Redirect to some admin dashboard after sign-up
     else:
         form = CustomAdminSignUpForm()
     
     return render(request, 'pharmacy/register_admin.html', {'form': form})
+
 
 
 
@@ -63,7 +65,7 @@ def manager_signup(request,group_id):
             user.pharmacy=group
             user.save()
             login(request, user)  # Log the user in after registration
-            return redirect('index')  # Redirect to some admin dashboard after sign-up
+            return redirect('dashboard')  # Redirect to some admin dashboard after sign-up
     else:
         form = CustomAdminSignUpForm()
         context={
@@ -88,7 +90,7 @@ def salesperson_signup(request, group_id):
             user.pharmacy=group  # Add the user to the specified group
             user.save() 
             login(request, user)
-            return redirect('index')  # Redirect to salesperson's dashboard after sign-up
+            return redirect('salesperson_dashboard')  # Redirect to salesperson's dashboard after sign-up
     else:
         form = CustomAdminSignUpForm()
 
@@ -100,6 +102,7 @@ def salesperson_signup(request, group_id):
 
 
 
+@login_required
 def get_today_sales_and_revenue(pharmacy):
     today = timezone.now().date()
 
@@ -112,8 +115,9 @@ def get_today_sales_and_revenue(pharmacy):
     return total_sales, total_revenue
 
 
+
 @login_required
-def index(request):
+def dashboard(request):
     today = timezone.now()
     first_day_of_month = today.replace(day=1)
     last_day_of_month = (first_day_of_month + timedelta(days=32)).replace(day=1) - timedelta(days=1)
@@ -162,6 +166,7 @@ def index(request):
 
 
 
+@login_required
 def create_pharmacy(request):
     if request.user.role == 'admin':
         if request.method == 'POST':
@@ -176,6 +181,7 @@ def create_pharmacy(request):
         return redirect('no_permission')  # Salesperson shouldn't be able to create a pharmacy
 
 
+@login_required
 def all_sales_person(request):
     pharmacies = Pharmacy.objects.filter(created_by=request.user)
 
@@ -198,6 +204,7 @@ def all_sales_person(request):
 
     return render(request, 'pharmacy/all_sales_person.html',context)
 
+@login_required
 def all_pharmacy(request):
     #pharmacy=request.user.pharmacy
     if request.method == 'POST':
@@ -219,6 +226,7 @@ def all_pharmacy(request):
 
     return render(request, 'pharmacy/all_pharmacy.html',context)
 
+@login_required
 def add_pharmacy(request):
     if request.method == 'POST':
         form = PharmacyForm(request.POST, request.FILES)  # Handle file upload for image
@@ -236,6 +244,7 @@ def add_pharmacy(request):
 
 # Edit Pharmacys (Admin)
 ##@user_passes_test(is_admin)
+@login_required
 def edit_pharmacy(request, pharmacy_id):
     pharmacy = Pharmacy.objects.get(id=pharmacy_id)
     if request.method == 'POST':
@@ -249,6 +258,7 @@ def edit_pharmacy(request, pharmacy_id):
 
 # Delete Pharmacys (Admin)
 ##@user_passes_test(is_admin)
+@login_required
 def delete_pharmacy(request, pharmacy_id):
     pharmacy = Pharmacy.objects.get(id=pharmacy_id)
     pharmacy.delete()
@@ -257,6 +267,7 @@ def delete_pharmacy(request, pharmacy_id):
 
 
 # Login View
+
 def login_view(request):
     if request.method == 'POST':
         form = CustomLoginForm(data=request.POST)
@@ -267,17 +278,18 @@ def login_view(request):
             if user and not user.suspended:
                 login(request, user)
                 if user.role == 'admin':
-                    return redirect('/')
+                    return redirect('dashboard')
                 elif user.role == 'salesperson':
-                    return redirect('/')
+                    return redirect('salesperson_dashboard')
                 else:
-                    return redirect('/')
+                    return redirect('dashboard')
     else:
         form = CustomLoginForm()
     context={'form':form,}
     return render(request, 'pharmacy/login.html',context)
 
 # Admin Dashboard View
+@login_required
 def admin_dashboard(request):
     if request.user.role != 'admin':
         return redirect('login')
@@ -309,21 +321,32 @@ def admin_dashboard(request):
     return render(request, 'pharmacy/admin_dashboard.html', context)
 
 # Salesperson Dashboard View
+@login_required
 def salesperson_dashboard(request):
-    if request.user.role != 'salesperson':
+    if request.user.role!='salesperson':
         return redirect('login')
-
-    # Get total sales made by this salesperson
-    sales = Sale.objects.filter(salesperson=request.user)
-    total_sales = sales.aggregate(total=models.Sum('total_price'))['total'] or 0
-
-    context = {
-        'sales': sales,
-        'total_sales': total_sales,
-    }
-    return render(request, 'pharmacy/salesperson_dashboard.html', context)
+    else:
+        # Get total sales made by this salesperson
+        sales = Sale.objects.filter(salesperson=request.user)
+        total_sales = sales.aggregate(total=models.Sum('total_price'))['total'] or 0
+        if request.method == 'POST':
+            form = SaleForm(request.POST, request.FILES)  # Handle file upload for image
+            if form.is_valid():
+                sales = form.save(commit=False)
+                sales.save()
+                return redirect('sales_list')  # Redirect to a sales list view or any other view
+        else:
+            form = SaleForm()
+        
+        context = {
+            'form': form,
+            'sales': sales,
+            'total_sales': total_sales,
+        }
+        return render(request, 'pharmacy/salesperson_dashboard.html', context)
 
 # Sales Reversal Request (Salesperson)
+@login_required
 def request_sale_reversal(request, sale_id):
     if request.user.role != 'salesperson':
         return redirect('login')
@@ -339,6 +362,7 @@ def request_sale_reversal(request, sale_id):
     return render(request, 'pharmacy/request_reversal.html', context)
 
 # Approve Sale Reversal (Admin)
+@login_required
 def approve_sale_reversal(request, reversal_id):
     if request.user.role != 'admin':
         return redirect('login')
@@ -351,46 +375,54 @@ def approve_sale_reversal(request, reversal_id):
     return redirect('admin_dashboard')
 
 
+ 
 
 
-
+@login_required
 def all_category(request):
     pharmacy=request.user.pharmacy
+    print(pharmacy)
     if request.method == 'POST':
         form = CategoryForm(request.POST, request.FILES)  # Handle file upload for image
         if form.is_valid():
             category = form.save(commit=False)
             category.pharmacy=pharmacy
             category.save()
-            return redirect('category_list')  # Redirect to a category list view or any other view
+            print('saved')
+            
+            return redirect('all_categories')  # Redirect to a category list view or any other view
     else:
         form = CategoryForm()
 
     
     drugs=Category.objects.all().filter(pharmacy=pharmacy)# (Category,pharmacy=pharmacy)  # Fetch the group using the group_id from the URL
+    print(drugs)
     context={
             'drugs': drugs,
             'form': form
             }
-
-    return render(request, 'pharmacy/all_category.html',context)
-
+    if request.user.role=='salesperson':
+        
+        return render(request, 'pharmacy/all_category_sales.html',context)
+    else:
+        return render(request, 'pharmacy/all_category.html',context)
+@login_required
 def add_category(request):
     if request.method == 'POST':
         form = CategoryForm(request.POST, request.FILES)  # Handle file upload for image
         if form.is_valid():
             category = form.save(commit=False)
             category.save()
-            return redirect('category_list')  # Redirect to a category list view or any other view
+            return redirect('all_categories')  # Redirect to a category list view or any other view
     else:
         form = CategoryForm()
     
     context = {'form': form}
     return render(request, 'pharmacy/add_category.html', context)
-
-
+    
 # Edit Category (Admin)
 ##@user_passes_test(is_admin)
+@login_required
 def edit_category(request, category_id):
     category = Category.objects.get(id=category_id)
     if request.method == 'POST':
@@ -404,6 +436,7 @@ def edit_category(request, category_id):
 
 # Delete Category (Admin)
 ##@user_passes_test(is_admin)
+@login_required
 def delete_category(request, category_id):
     category = Category.objects.get(id=category_id)
     category.delete()
@@ -415,6 +448,7 @@ def delete_category(request, category_id):
 
 
 
+@login_required
 def all_sales(request):
     pharmacy=request.user.pharmacy
     if request.method == 'POST':
@@ -436,6 +470,7 @@ def all_sales(request):
 
     return render(request, 'pharmacy/all_sales.html',context)
 
+@login_required
 def add_sales(request):
     if request.method == 'POST':
         form = SaleForm(request.POST, request.FILES)  # Handle file upload for image
@@ -452,6 +487,7 @@ def add_sales(request):
 
 # Edit Sales (Admin)
 ##@user_passes_test(is_admin)
+@login_required
 def edit_sales(request, sales_id):
     sales = Sale.objects.get(id=sales_id)
     if request.method == 'POST':
@@ -465,6 +501,7 @@ def edit_sales(request, sales_id):
 
 # Delete Sales (Admin)
 ##@user_passes_test(is_admin)
+@login_required
 def delete_sales(request, sales_id):
     sales = Sale.objects.get(id=sales_id)
     sales.delete()
@@ -476,6 +513,7 @@ def delete_sales(request, sales_id):
 
 
 
+@login_required
 def all_supplier(request):
     pharmacy=request.user.pharmacy
     if request.method == 'POST':
@@ -497,6 +535,7 @@ def all_supplier(request):
 
     return render(request, 'pharmacy/all_supplier.html',context)
 
+@login_required
 def add_supplier(request):
     if request.method == 'POST':
         form = SupplierForm(request.POST, request.FILES)  # Handle file upload for image
@@ -513,6 +552,7 @@ def add_supplier(request):
 
 # Edit Supplier (Admin)
 ##@user_passes_test(is_admin)
+@login_required
 def edit_supplier(request, supplier_id):
     supplier = Supplier.objects.get(id=supplier_id)
     if request.method == 'POST':
@@ -526,6 +566,7 @@ def edit_supplier(request, supplier_id):
 
 # Delete Supplier (Admin)
 ##@user_passes_test(is_admin)
+@login_required
 def delete_supplier(request, supplier_id):
     supplier = Supplier.objects.get(id=supplier_id)
     supplier.delete()
@@ -539,6 +580,7 @@ def delete_supplier(request, supplier_id):
 
 
 
+@login_required
 def all_products(request):
     pharmacy=request.user.pharmacy
     if request.method == 'POST':
@@ -556,9 +598,12 @@ def all_products(request):
             'drugs': drugs,
             'form': form
             }
-
-    return render(request, 'pharmacy/all_drugs.html',context)
-
+    if request.user.role== ('admin' or 'manager'):
+        return render(request, 'pharmacy/all_drugs.html',context)
+    if request.user.role=='salesperson':
+        return render(request, 'pharmacy/all_drugs_sales.html',context)
+ 
+@login_required
 def add_product(request):
     if request.method == 'POST':
         form = ProductForm(request.POST, request.FILES)  # Handle file upload for image
@@ -570,11 +615,15 @@ def add_product(request):
         form = ProductForm()
     
     context = {'form': form}
-    return render(request, 'pharmacy/add_product.html', context)
+    if request.user.role=='salesperson':
+        return render(request, 'pharmacy/add_product_sales.html', context)
+    else:
+        return render(request, 'pharmacy/add_product.html', context)
 
 
 # Edit Product (Admin)
 ##@user_passes_test(is_admin)
+@login_required
 def edit_product(request, product_id):
     product = Product.objects.get(id=product_id)
     if request.method == 'POST':
@@ -588,6 +637,7 @@ def edit_product(request, product_id):
 
 # Delete Product (Admin)
 ##@user_passes_test(is_admin)
+@login_required
 def delete_product(request, product_id):
     product = Product.objects.get(id=product_id)
     product.delete()
@@ -598,52 +648,37 @@ def delete_product(request, product_id):
 from django.contrib.auth.decorators import user_passes_test
 
 # Check if the user is admin
+@login_required
 def is_admin(user):
     return user.is_authenticated and user.role == 'admin'
 
 # Check if the user is salesperson
+@login_required
 def is_salesperson(user):
     return user.is_authenticated and user.role == 'salesperson'
 
 # Admin Dashboard
 #@user_passes_test(is_admin)
+@login_required
 def admin_dashboard(request):
     # Admin functionality here...
     return render(request, 'pharmacy/admin_dashboard.html')
 
 # Salesperson Dashboard
 #@user_passes_test(is_salesperson)
-def salesperson_dashboard(request):
-    # Salesperson functionality here...
-    return render(request, 'pharmacy/salesperson_dashboard.html')
 
-
-
-from .forms import SaleForm
-
-#@user_passes_test(is_salesperson)
-def process_sale(request):
-    if request.method == 'POST':
-        form = SaleForm(request.POST)
-        if form.is_valid():
-            sale = form.save(commit=False)
-            sale.salesperson = request.user
-            sale.total_price = sale.quantity * sale.product.price
-            sale.save()
-            return redirect('salesperson_dashboard')
-    else:
-        form = SaleForm()
-    return render(request, 'pharmacy/process_sale.html', {'form': form})
 
 
 # List of Sales (Admin)
 #@user_passes_test(is_admin)
+@login_required
 def list_sales(request):
     sales = Sale.objects.all()
     return render(request, 'pharmacy/list_sales.html', {'sales': sales})
 
 # Request Sale Reversal (Admin)
 #@user_passes_test(is_admin)
+@login_required
 def request_sale_reversal(request, sale_id):
     sale = Sale.objects.get(id=sale_id)
     if request.method == 'POST':
@@ -654,6 +689,7 @@ def request_sale_reversal(request, sale_id):
 
 # Approve Sale Reversal (Admin)
 #@user_passes_test(is_admin)
+@login_required
 def approve_reversal(request, reversal_id):
     reversal = SaleReversal.objects.get(id=reversal_id)
     reversal.is_approved = True
@@ -664,13 +700,21 @@ def approve_reversal(request, reversal_id):
 
 
 #@user_passes_test(is_admin)
+@login_required
 def sales_report(request):
     # Filter sales by date or month
     sales = Sale.objects.all()
     return render(request, 'pharmacy/sales_report.html', {'sales': sales})
 
+
 def about_us(request):
     return render(request, 'pharmacy/about_us.html')
+
+
+
+def home(request):
+    return render(request, 'pharmacy/home.html')
+
 
 def financial_statement(request):
     return render(request, 'pharmacy/financial_statement.html')

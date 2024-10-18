@@ -1,0 +1,370 @@
+{% extends 'pharmacy/base/base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block content %}
+        <div class="container">
+          <div class="page-inner">
+            <div
+              class="d-flex align-items-left align-items-md-center flex-column flex-md-row pt-2 pb-4"
+            >
+              <div>
+                <h3 class="fw-bold mb-3">PharmaSuite</h3>
+                <h6 class="op-7 mb-2">Control,Management,Salary Payment, Monitoring and Accounting</h6>
+              </div>
+              <div class="ms-md-auto py-2 py-md-0">
+                <a href="{% url 'admin_signup' %}" class="btn btn-label-info btn-round me-2">Add Your Pharmacies</a>
+                <a href="{% url 'admin_signup' %}" class="btn btn-primary btn-round">Manage From Home</a>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-8">
+                <div class="card card-round">
+                  <div class="card-header">
+                    <div class="card-head-row">
+                      <div class="card-title">We Are ????</div>
+
+                    </div>
+                  </div>
+                  <div class="container">
+<p><strong>LECZ-PharmaSuite (LPS)</strong>, the ultimate software solution designed to revolutionize the way pharmacies are managed. Built with precision, innovation, and the needs of modern pharmacists in mind, LPS offers an all-in-one platform that simplifies your pharmacy’s operations while maximizing profitability.</p>
+
+                  </div>
+                  <div class="card-header">
+                    <div class="card-head-row">
+                      <div class="card-title">Why choose LECZ-PharmaSuite ???</div>
+
+                    </div>
+                  </div>
+                  <div class="container">
+        <ul>
+            <li><strong>Automated Accounting</strong>: Accurate financial reports at your fingertips, without the hassle.</li>
+            <li><strong>Streamlined Inventory</strong>: Never miss a restock and prevent losses from expired or unsold drugs.</li>
+            <li><strong>User-Friendly Interface</strong>: Manage your pharmacy with ease, even if you're not tech-savvy.</li>
+            <li><strong>Comprehensive Sales Tracking</strong>: Get real-time insights into your sales and stock performance.</li>
+            <li><strong>Affordable & Efficient</strong>: Save time, cut costs, and boost profits—all for a low annual fee.</li>
+        </ul>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="card card-primary card-round" >
+                  <img src="{% static 'assets/img/1.jpeg' %}">
+                </div>
+                <div class="card card-round">
+                  
+                    <img src="{% static 'assets/img/1.png' %}">
+
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-5">
+                <div class="card card-round">
+                  <div class="card-body">
+                    <div class="card-head-row card-tools-still-right">
+                      <div class="card-title">Pharmacists Manangement(Sales Tracking)</div>
+                    </div>
+                    <div class="card-list py-4">
+                      <div class="container">
+                        <ul>
+                            <li><strong>Comprehensive Track Sales</strong>: Accurate Sales Tracking To ensure record keeping, and Correct Accounting.</li>
+                            <li><strong>Track Theft</strong>: Track and mismatch in sales which may indicate inefficiency and possible theft/loss or Mistakes at your store.</li>
+                            <li><strong>Track Close to Expiry Drugs</strong>: Efficient ways to deal with such drugs to prevent losses and client sickness.</li>
+                            <li><strong>Comprehensive Sales Tracking</strong>: Get real-time insights into your sales and stock performance.</li>
+                            <li><strong>Employee Payment</strong>: Automated Employee Payments, and Pay roll Management,Tracking of Each Employee sales.</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-7">
+                <div class="card card-round">
+                  <div class="card-header">
+                    <div class="card-head-row card-tools-still-right">
+                      <div class="card-title">Stock Management</div>
+
+                    </div>
+                  </div>
+
+                      <img src="{% static 'assets/img/pharmacy2.jpg' %}">
+
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-12">
+                <div class="card">
+                  <div class="container">
+                    <h2  style="text-align:center;"><u>Easy To Use</u></h2>
+                    <p>Straight Forward System<strong>Design to be professional</strong>, the platform is an easy to use implementation of all business principle in mind.Where accounting results,sales person, drug stock record , and financial statement is one click away, all the main word load is put on the sale person, such as stock entry, entry of sales recor, where the sales person must enter record of each sale to get a recipt for the client. and yo as a business owner can moniter everything including pricing from you phone or computer</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="card card-round">
+                  <div class="card-header">
+                    <div class="card-head-row card-tools-still-right">
+                      <div class="card-title">Connects You And All Your Pharmcies</div>
+
+                    </div>
+                  </div>
+
+                      <img src="{% static 'assets/img/pharmacy1.jpg' %}">
+
+                </div>
+              </div>
+
+              <div class="col-md-6">
+                  <div class="card-body">
+                     <div class="card card-round">
+                    <div class="card-head-row card-tools-still-right">
+                      <div class="card-title"  style="text-align:center;">&nbsp How to Make More Profits</div>
+                    </div>
+                    <div class="card-list py-4">
+                      <div class="container">
+                        <ul>
+                            <li><strong>Free Time to Maintain Your Other Projects</strong>:Due to ease adn efficiency, As the owner you will be always having enough free time in your hands to mange your other investments or relax.</li>
+                            <li><strong>Maximize Profits</strong>: Being Notified of Drugs about to expire ensures that those drugs can be fast sold without legal implications, ensuring safety of the customer and ensuring profit or protection from losses.</li>
+                            <li><strong>Misplacement or Insecurity</strong>: Helps you protect your self from theft by each employee, ensuring that you don't make losses, a big concern of many businesses.</li>
+                            <li><strong>Compare and Acquire</strong>:Based On All your supplier Listed, Our system can always compared and show you the cheapest supplier for each drug/product, as long as we have supplier detail for each drug(Meaning more profit margin).</li>
+                            <li><strong>Ensure Product Prices to Clients</strong>: For there Own benefits, Employes Cheap(Over price) clients, this clients don't come back, in the long run you clientys are down and you have business bills to Pay,Our system ensures that a product is sold at a price you can see and monitor, hence ensure fairness and a long term business relationship with all you clients, in the long run, Client are many, Profits are massive and Business is a success .</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+              <div class="col-md-12">
+                <div class="card">
+                   <div class="card-list py-4">
+                    <h2 style="text-align:center;"><u>Accounting and Finance</u></h2>
+                    <ul>
+                    <p>Monitor Business Progress and Have <strong>Bank ready Financial Statements</strong>, Financial Statements are being used to resolve tax related and bank related issues, Our system will automatically generate a financial statement relating to you business for eac month,and you can use it to mornitor your fiancial growth</p>
+                  </ul>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-12">
+                <div class="card">
+                  <div class="container">
+                    <h2  style="text-align:center;"><u>Business Forecast and Predictive Analysis</u></h2>
+                    <ul>
+                    <p>In the era of <strong>Machine learning and Artificial Intelligence  </strong><i>Our trained AI's Predictions on how ayour business is expected to perform the next day, week,month even year is what you use to avoid drop in sales, know when to advertise and market, know when to focus on customer experience.All this help ensure the business survives and Expands.</i><strong>USE OUR SYSTEM, KNOW THE EXPECTED FUTURE OF YOUR BUSINESS</strong></p>
+                  </ul>
+                  </div>
+                </div>
+              </div>
+               <!-- Pricing -->
+            <h3 class="fw-bold mb-3" style="text-align:center;"><u>Pricing</u></h3>
+            <div class="row justify-content-center align-items-center mb-1">
+              <div class="col-md-4 ps-md-0">
+                <div class="card card-pricing">
+                  <div class="card-header">
+                    <h4 class="card-title">Basic Package</h4>
+                    <div class="card-price">
+                      <span class="price">UGX 195,000/3 months</span>
+                      <br>
+                      <span class="text" style="color:black;">65000/months</span>
+                    </div>
+                  </div>
+                  <div class="card-body">
+                    <ul class="specification-list">
+                      <li>
+                        <span class="name-specification">Premium Service</span>
+                        <span class="status-specification">Yes</span>
+                        <br>
+                      </li>
+
+                      <li>
+                        <span class="name-specification">Support</span>
+                        <span class="status-specification">Yes</span>
+                      </li>                    
+
+                    </ul>
+                  </div>
+                  <div class="card-footer">
+                    <button class="btn btn-primary w-100">
+                      <b>Get Started</b>
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4 ps-md-0 pe-md-0">
+                <div class="card card-pricing card-pricing-focus card-primary">
+                  <div class="card-header">
+                    <h4 class="card-title">Professional(Discounted)</h4>
+                    <div class="card-price">
+                      <span class="price">UGX 330,000/6 months</span>
+                      <br>
+                      <span class="text"  style="color:black;">UGX 55000/month</span>
+                    </div>
+                  </div>
+                  <div class="card-body">
+                    <ul class="specification-list">
+                      <li>
+                        <span class="name-specification">Premium Service</span>
+                        <span class="status-specification">Yes</span>
+                        <br>
+                      </li>
+
+                      <li>
+                        <span class="name-specification">Support</span>
+                        <span class="status-specification">Yes</span>
+                      </li>                    
+
+                    </ul>
+                  </div>
+                  <div class="card-footer">
+                    <button class="btn btn-light w-100">
+                      <b>Get Started</b>
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4 pe-md-0">
+                <div class="card card-pricing">
+                  <div class="card-header">
+                    <h4 class="card-title">Supper Discounted</h4>
+                    <div class="card-price">
+                      <span class="price">UGX 504,000/year</span>
+                      <br>
+                      <span class="text"  style="color:black;">UGX 42000/month</span>
+                    </div>
+                  </div>
+                <div class="card-body">
+                  <ul class="specification-list">
+                      <li>
+                        <span class="name-specification">Premium Service</span>
+                        <span class="status-specification">Yes</span>
+                        <br>
+                      </li>
+
+                      <li>
+                        <span class="name-specification">Support</span>
+                        <span class="status-specification">Yes</span>
+                      </li>                    
+
+                    </ul>
+                  </div>
+                  <div class="card-footer">
+                    <button class="btn btn-primary w-100">
+                      <b>Get Started</b>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row row-card-no-pd mt--2">
+              <div class="col-12 col-sm-6 col-md-6 col-xl-3">
+                <div class="card">
+                  <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                      <div>
+                        <h5><b>Super Business Consistency</b></h5>
+                        <p class="text-muted">To All Customers,Sales people and Manager</p>
+                      </div>
+                      <h3 class="text-info fw-bold">1</h3>
+                    </div>
+                    <div class="progress progress-sm">
+                      <div
+                        class="progress-bar bg-info w-100"
+                        role="progressbar"
+                        aria-valuenow="100"
+                        aria-valuemin="0"
+                        aria-valuemax="100"
+                      ></div>
+                    </div>
+                    <div class="d-flex justify-content-between mt-2">
+                      <p class="text-muted mb-0">No Risks</p>
+                      <p class="text-muted mb-0">100%</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-12 col-sm-6 col-md-6 col-xl-3">
+                <div class="card">
+                  <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                      <div>
+                        <h5><b>Ease, Simplicity and Complete Control</b></h5>
+                        <p class="text-muted">Always be Informed</p>
+                      </div>
+                      <h3 class="text-success fw-bold">2</h3>
+                    </div>
+                    <div class="progress progress-sm">
+                      <div
+                        class="progress-bar bg-success w-100"
+                        role="progressbar"
+                        aria-valuenow="100"
+                        aria-valuemin="0"
+                        aria-valuemax="100"
+                      ></div>
+                    </div>
+                    <div class="d-flex justify-content-between mt-2">
+                      <p class="text-muted mb-0">No technical</p>
+                      <p class="text-muted mb-0">100%</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-12 col-sm-6 col-md-6 col-xl-3">
+                <div class="card">
+                  <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                      <div>
+                        <h5><b>Full Automated Business Suite</b></h5>
+                        <p class="text-muted">With Accounting and Fianace</p>
+                      </div>
+                      <h3 class="text-danger fw-bold">3</h3>
+                    </div>
+                    <div class="progress progress-sm">
+                      <div
+                        class="progress-bar bg-danger w-100"
+                        role="progressbar"
+                        aria-valuenow="100"
+                        aria-valuemin="0"
+                        aria-valuemax="100"
+                      ></div>
+                    </div>
+                    <div class="d-flex justify-content-between mt-2">
+                      <p class="text-muted mb-0">Your Accountant</p>
+                      <p class="text-muted mb-0">100%</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-12 col-sm-6 col-md-6 col-xl-3">
+                <div class="card">
+                  <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                      <div>
+                        <h5><b>Monitor All your Stores Anywhere In the World</b></h5>
+                        <p class="text-muted">Using Ur Phone ,laptop etc</p>
+                      </div>
+                      <h3 class="text-secondary fw-bold">12</h3>
+                    </div>
+                    <div class="progress progress-sm">
+                      <div
+                        class="progress-bar bg-secondary w-100"
+                        role="progressbar"
+                        aria-valuenow="100"
+                        aria-valuemin="0"
+                        aria-valuemax="100"
+                      ></div>
+                    </div>
+                    <div class="d-flex justify-content-between mt-2">
+                      <p class="text-muted mb-0">Via Internet</p>
+                      <p class="text-muted mb-0">100%</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+{% endblock %}

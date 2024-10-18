@@ -14,43 +14,40 @@
             <h3 class="fw-bold mb-3" style="text-align: center;"><u>LECZ-PharmaSuite(LPS)</u></h3>
             <div class="row justify-content-center align-items-center mb-1" style="background-image: url('/static/assets/img/pharmacy2.jpg');">
 
-              <div class="col-md-3 ps-md-0 pe-md-0" >
-                <form method="POST">
-                  {% csrf_token %}
-                <div class="card card-pricing card-pricing-focus card-primary">
-                  <div class="card-header">
-                <h4 class="card-title">LOGIN &nbsp&nbsp &nbsp  <span class="text">Or &nbsp <a href="{% url 'admin_signup' %}"class="btn btn-search" style="background-color: black;color: white;">Register</a></span></h4> 
-                    <div class="card-price">
-                      
-                  </div>                  
-                  </div>
-                  <div class="card-body">
-                    <ul class="specification-list">
-                      {{ form.non_field_errors }}
-                      <div class="form-group">
-                          {{ form.username }}
-                          {{ form.username.errors }}
-                      </div>
-                      <div class="form-group">
-                          
-                          {{ form.password }}
-                          {{ form.password.errors }}
-                      </div>
-                      <input type="checkbox" id="togglePassword" onclick="togglePasswordVisibility()"> Show Password
+                <div class="col-md-3" >
+                  <form method="POST">
+                    {% csrf_token %}
+                  <div class="card card-pricing card-pricing-focus card-primary">
+                    <div class="card-header">
+                  <h4 class="card-title">LOGIN &nbsp&nbsp &nbsp  <span class="text">Or &nbsp <a href="{% url 'admin_signup' %}"class="btn btn-search" style="background-color: black;color: white;">Register</a></span></h4> 
+                      <div class="card-price">
+                        
+                    <div class="card-body">
+                      <ul class="specification-list">
+                        {{ form.non_field_errors }}
+                        <div class="form-group">
+                            {{ form.username }}
+                            {{ form.username.errors }}
+                        </div>
+                        <div class="form-group">
+                            
+                            {{ form.password }}
+                            {{ form.password.errors }}
+                        </div>
+                        <input type="checkbox" id="togglePassword" onclick="togglePasswordVisibility()"> Show Password
 
-                    </ul>
-                  </div>
-                  <div class="card-footer">
-                    <button class="btn btn-light w-100" type="submit">
-                      <b>LOGIN</b>
-                    </button>
-                  </div>
+                      </ul>
+                    </div>
+                    <div class="card-footer">
+                      <button class="btn btn-light w-100" type="submit">
+                        <b>LOGIN</b>
+                      </button>
+                    </div>
 
-                </div>
-                </form>
-                
+                  </div>
+                  </form>
+
               </div>
-
             </div>
           </div>
         </div>

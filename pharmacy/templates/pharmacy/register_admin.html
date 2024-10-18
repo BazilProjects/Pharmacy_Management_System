@@ -26,7 +26,13 @@
                   </div>
                   <div class="card-body">
                     <ul class="specification-list">
-                      {{ form|crispy }} 
+                      {{ form.username }}
+                       <br>
+                      {{ form.email }} 
+                       <br>
+                      {{ form.password }} 
+                       <br>
+                      {{ form.password2 }} 
                       <input type="checkbox" id="togglePassword" onclick="togglePasswordVisibility()"> Show Password
 
                     </ul>
