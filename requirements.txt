@@ -3,3 +3,4 @@ gunicorn
 django_jinja
 django-crispy-forms
 whitenoise
+django_select2
