@@ -23,6 +23,49 @@ from .models import User, Group
 from django.contrib.auth.decorators import login_required
 from .forms import ProductForm
 from django.http import JsonResponse
+from django.http import JsonResponse
+from .models import Product
+from django.http import JsonResponse
+
+from django.http import HttpResponse
+def drug_suggestions(request):
+    query = request.GET.get('query', '')
+    if query:
+        # Filter drugs that match the query (case-insensitive)
+        drugs = Product.objects.filter(name__icontains=query).values_list('name', flat=True)[:10]  # Limit to 10 results
+        return JsonResponse({'suggestions': list(drugs)})
+    return JsonResponse({'suggestions': []})
+
+def submit_form(request):
+    if request.method == 'POST':
+        # Retrieve all products and quantities from the request
+        products = request.POST.getlist('product[]')
+        quantities = request.POST.getlist('quantity[]')
+
+        # Example: Iterate over products and quantities and process each pair
+        for product, quantity in zip(products, quantities):
+            # Process each product and quantity (e.g., save to the database)
+            print(f"Product: {product}, Quantity: {quantity}")
+
+        # Return a success message after processing
+        return HttpResponse("Form submitted successfully!")
+    else:
+        return HttpResponse("Invalid request. Only POST method is allowed.")
+
+def check_drug_exists(request):
+    product_name = request.GET.get('product_name')
+    if Product.objects.filter(name__iexact=product_name).exists():
+        return JsonResponse({'exists': True})
+    else:
+        return JsonResponse({'exists': False})
+
+def product_search(request):
+    if 'q' in request.GET:
+        search_term = request.GET.get('q')
+        products = Product.objects.filter(name__icontains=search_term, stock_quantity__gt=0)
+        results = [{'id': product.id, 'text': product.name} for product in products]
+        return JsonResponse(results, safe=False)
+    return JsonResponse([], safe=False)
 
 @login_required
 def sales_data(request):
@@ -330,16 +373,22 @@ def salesperson_dashboard(request):
         sales = Sale.objects.filter(salesperson=request.user)
         total_sales = sales.aggregate(total=models.Sum('total_price'))['total'] or 0
         if request.method == 'POST':
-            form = SaleForm(request.POST, request.FILES)  # Handle file upload for image
-            if form.is_valid():
-                sales = form.save(commit=False)
-                sales.save()
-                return redirect('sales_list')  # Redirect to a sales list view or any other view
+            formset = SaleFormSet(request.POST)
+            if formset.is_valid():
+                for form in formset:
+                    if form.cleaned_data:  # Check if the form has any filled data
+                        # Ensure we aren't processing deleted or empty forms
+                        if not form.cleaned_data.get('DELETE', False):
+                            sale = form.save(commit=False)
+                            # Decrease stock quantity
+                            sale.product.stock_quantity -= form.cleaned_data['quantity']
+                            sale.product.save()
+                            sale.save()
+                return redirect('success_url')  # Replace with your success page URL
         else:
-            form = SaleForm()
-        
+            formset = SaleFormSet(queryset=Sale.objects.none()) 
         context = {
-            'form': form,
+            'formset': formset,
             'sales': sales,
             'total_sales': total_sales,
         }

@@ -76,12 +76,21 @@
             <ul class="nav nav-secondary">
               {% if user.is_authenticated %}
               <li class="nav-item active">
+                {% if user.role == 'admin' %}
                 <a   
-                  href="/"
+                  href="{% url 'dashboard' %}"
                 >
                   <i class="fas fa-home"></i>
                   <p>Dashboard</p>
                 </a>
+                {% elif user.role == 'salesperson' %}
+                <a   
+                  href="{% url 'salesperson_dashboard' %}"
+                >
+                  <i class="fas fa-home"></i>
+                  <p>Dashboard</p>
+                </a>
+                {% endif%}
 
               </li>
               <li class="nav-section">
@@ -488,7 +497,10 @@
                         <div class="dropdown-divider"></div>
                         <a class="dropdown-item" href="#">Account Setting</a>
                         <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="#">Logout</a>
+                        {% if user.is_authenticated %}
+                            <a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
+                        {% endif %}
+
                       </li>
                     </div>
                   </ul>

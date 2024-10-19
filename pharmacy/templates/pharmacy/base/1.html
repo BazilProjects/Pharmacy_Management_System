@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Form</title>
+</head>
+<body>
+    <h1>Add Products and Quantities</h1>
+    
+    <form id="productForm" method="POST" action="/submit-form/">
+        <div id="productFields">
+            <!-- Initial product and quantity fields -->
+            <div class="product-entry">
+                <label for="product">Product:</label>
+                <input type="text" name="product[]" placeholder="Product Name" required>
+
+                <label for="quantity">Quantity:</label>
+                <input type="number" name="quantity[]" placeholder="Quantity" required>
+            </div>
+        </div>
+
+        <button type="button" id="addProduct">Add Another Product</button>
+        <button type="submit">Submit</button>
+    </form>
+
+    
+</body>
+</html>

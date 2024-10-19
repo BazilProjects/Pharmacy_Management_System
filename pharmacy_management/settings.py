@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sitemaps',
     'django_jinja',
+    'django_select2',
     'crispy_forms',
     'pharmacy',
 ]

@@ -15,14 +15,37 @@ class ProductForm(forms.ModelForm):
         model = Product
         fields = ['name', 'category', 'supplier', 'stock_quantity', 'price', 'expiry_date', 'image']
 
+from django import forms
+from django_select2.forms import Select2Widget
+
 class SaleForm(forms.ModelForm):
     class Meta:
         model = Sale
         fields = ['product', 'quantity']
-    # Optionally, override the init method to customize the form behavior if needed
+        widgets = {
+            'product': Select2Widget,  # Use Select2 widget for product field
+        }
+
     def __init__(self, *args, **kwargs):
-        super(SaleForm, self).__init__(*args, **kwargs)
-        self.fields['product'].widget.attrs.update({'class': 'form-control'})
+        super().__init__(*args, **kwargs)
+        # Limit product choices to available stock
+        self.fields['product'].queryset = Product.objects.filter(stock_quantity__gt=0)
+
+    def clean_quantity(self):
+        quantity = self.cleaned_data.get('quantity')
+        product = self.cleaned_data.get('product')
+
+        if product and quantity > product.stock_quantity:
+            raise forms.ValidationError(f"Cannot order more than {product.stock_quantity} units of {product.name}.")
+        
+        return quantity
+
+
+from django.forms import modelformset_factory
+
+SaleFormSet = modelformset_factory(Sale, form=SaleForm, extra=5)  # Adjust 'extra' to the number of forms you want to display by default
+
+
 class PharmacyForm(forms.ModelForm):
     class Meta:
         model = Pharmacy

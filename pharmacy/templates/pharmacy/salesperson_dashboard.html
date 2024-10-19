@@ -2,6 +2,8 @@
 {% load static %}
 {% load crispy_forms_tags %}
 {% block content %}
+ <link href="{% static 'django_select2/css/select2.css' %}" rel="stylesheet" />
+    <script src="{% static 'django_select2/js/select2.js' %}"></script>
         <div class="container">
           <div class="page-inner">
             <div class="page-header">
@@ -29,19 +31,181 @@
             <div class="row">
               <div class="col-md-12">
                 <div class="card">
-                <form method="POST">
-                  {% csrf_token %}
-                {{ form|crispy }}
-                <div class="card-footer">
-                    <button class="btn btn-primary w-100">
-                      <b>Add {{product}}</b>
-                    </button>
-                  </div>
-                </form>
-              </div>
-              </div>
-            </div>
-          </div>
-        </div>
+                    <div class="input-group-prepend">
+                    <h1>Add Products and Quantities</h1>
 
+                        <form id="productForm" method="POST" action="/submit_form" class="form-control">
+
+                        {% csrf_token %}
+                        <div id="productFields">
+                            <!-- Initial product and quantity fields -->
+                            <div class="product-entry">
+                                <label for="product">Product:</label>
+                                <input type="text" name="product[]" placeholder="Product Name" class="product-input" required autocomplete="off">
+                                <div class="suggestions"></div>
+
+                                <label for="quantity">Quantity:</label>
+                                <input type="number" name="quantity[]" placeholder="Quantity" required>
+
+                                <span class="error"></span>
+                                <span class="delete-product" onclick="deleteProduct(this)">Delete</span>
+                            </div>
+                        </div>
+
+                        <button type="button" id="addProduct">Add Another Product</button>
+                        <button type="submit">Submit</button>
+                    </form>
+                    </div>
+                </div>
+                </div>
+            </div>
+        </div>
+    </div>
+<script>
+        // Store valid suggestions for each input
+        const validInputs = {};
+
+        // JavaScript to dynamically add more product and quantity fields
+        document.getElementById('addProduct').addEventListener('click', function () {
+            const productEntryDiv = document.createElement('div');
+            productEntryDiv.classList.add('product-entry');
+
+            const productInput = document.createElement('input');
+            productInput.setAttribute('type', 'text');
+            productInput.setAttribute('name', 'product[]');
+            productInput.setAttribute('placeholder', 'Product Name');
+            productInput.classList.add('product-input');
+            productInput.required = true;
+            productInput.setAttribute('autocomplete', 'off');
+
+            const suggestionsDiv = document.createElement('div');
+            suggestionsDiv.classList.add('suggestions');
+
+            const quantityInput = document.createElement('input');
+            quantityInput.setAttribute('type', 'number');
+            quantityInput.setAttribute('name', 'quantity[]');
+            quantityInput.setAttribute('placeholder', 'Quantity');
+            quantityInput.required = true;
+
+            const errorSpan = document.createElement('span');
+            errorSpan.classList.add('error');
+
+            productEntryDiv.appendChild(productInput);
+            productEntryDiv.appendChild(suggestionsDiv);
+            productEntryDiv.appendChild(quantityInput);
+            productEntryDiv.appendChild(errorSpan);
+            document.getElementById('productFields').appendChild(productEntryDiv);
+
+            // Add event listeners for validation and suggestions
+            productInput.addEventListener('input', handleAutoSuggest);
+            productInput.addEventListener('blur', validateInput);
+        });
+        // Function to delete a product entry
+        function deleteProduct(button) {
+            const productEntryDiv = button.parentElement; // Get the parent div (product-entry)
+            productEntryDiv.remove(); // Remove the entire product entry
+        }
+
+        // Function to fetch drug suggestions and display them
+        function handleAutoSuggest(event) {
+            const productInput = event.target;
+            const suggestionsDiv = productInput.nextElementSibling;
+            const query = productInput.value;
+
+            // Clear previous suggestions
+            suggestionsDiv.innerHTML = '';
+            validInputs[productInput.name] = false;  // Assume invalid until selection is made
+
+            if (query.trim().length === 0) return;
+
+            const xhr = new XMLHttpRequest();
+            xhr.open('GET', `/drug-suggestions/?query=${encodeURIComponent(query)}`, true);
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    const response = JSON.parse(xhr.responseText);
+                    const suggestions = response.suggestions;
+
+                    suggestions.forEach(function(suggestion) {
+                        const suggestionItem = document.createElement('div');
+                        suggestionItem.classList.add('suggestion-item');
+                        suggestionItem.textContent = suggestion;
+                        suggestionsDiv.appendChild(suggestionItem);
+
+                        // When suggestion is clicked, fill the input and mark as valid
+                        suggestionItem.addEventListener('click', function() {
+                            productInput.value = suggestion;
+                            suggestionsDiv.innerHTML = '';
+                            validInputs[productInput.name] = true;  // Mark input as valid
+                            productInput.setAttribute('readonly', 'true');  // Disable further editing
+                        });
+                    });
+                }
+            };
+            xhr.send();
+        }
+
+        // Validate input field to ensure only valid suggestions are submitted
+        function validateInput(event) {
+            const productInput = event.target;
+            const errorSpan = productInput.nextElementSibling.nextElementSibling.nextElementSibling;
+
+            // If the input is not marked valid, show an error
+            if (!validInputs[productInput.name]) {
+                errorSpan.textContent = 'Please select a valid product from the list.';
+                productInput.value = '';  // Clear the invalid input
+            } else {
+                errorSpan.textContent = '';
+            }
+        }
+
+        // Prevent form submission if there are invalid inputs
+        document.getElementById('productForm').addEventListener('submit', function (event) {
+            let formIsValid = true;
+            document.querySelectorAll('.product-input').forEach(function (input) {
+                const errorSpan = input.nextElementSibling.nextElementSibling.nextElementSibling;
+
+                if (!validInputs[input.name]) {
+                    errorSpan.textContent = 'Please select a valid product from the list.';
+                    formIsValid = false;
+                }
+            });
+
+            if (!formIsValid) {
+                event.preventDefault();  // Block form submission
+            }
+        });
+
+        // Add autosuggest to the initial product input
+        document.querySelector('.product-input').addEventListener('input', handleAutoSuggest);
+        document.querySelector('.product-input').addEventListener('blur', validateInput);  // Validate when input loses focus
+    </script>
+<style>
+        .delete-product {
+            margin-left: 10px;
+            color: red;
+            cursor: pointer;
+        }
+        .suggestions {
+            border: 1px solid #ccc;
+            background-color: #fff;
+            max-height: 150px;
+            overflow-y: auto;
+            position: absolute;
+            z-index: 1000;
+            width: 100%;
+        }
+
+        .suggestion-item {
+            padding: 10px;
+            cursor: pointer;
+        }
+
+        .suggestion-item:hover {
+            background-color: #f0f0f0;
+        }
+
+        .error {
+            color: red;
+        }
+    </style>
 {% endblock %}

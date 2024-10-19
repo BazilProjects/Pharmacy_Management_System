@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     path('', views.home, name='home'),
@@ -28,15 +29,21 @@ urlpatterns = [
     path('add-pharmacy/', views.add_pharmacy, name='add_pharmacy'),
     path('edit-pharmacy/<int:pharmacy_id>/', views.edit_pharmacy, name='edit_pharmacy'),
     path('delete-pharmacy/<int:pharmacy_id>/', views.delete_pharmacy, name='delete_pharmacy'),
+    path('logout/', auth_views.LogoutView.as_view(next_page='/'), name='logout'),
+
     
 
 
     path('all_sale', views.all_sales, name='all_sale'),
+    path('check-drug/', views.check_drug_exists, name='check_drug_exists'),
+    path('drug-suggestions/', views.drug_suggestions, name='drug_suggestions'),
+    path('submit_form',views.submit_form,name="submit_form"),
     path('add-sale/', views.add_sales, name='add_sale'),
     path('edit-sale/<int:product_id>/', views.edit_sales, name='edit_sale'),
     
     # URL pattern for deleting a product
     path('delete-product/<int:product_id>/', views.delete_product, name='delete_product'),
+    path('product_search',views.product_search,name='product_search'),
     
     path('login/', views.login_view, name='login'),
     path('about_us/', views.about_us, name='about_us'),
