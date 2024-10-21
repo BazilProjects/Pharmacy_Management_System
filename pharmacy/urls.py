@@ -4,6 +4,7 @@ from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     path('', views.home, name='home'),
+    path('contact_us', views.contact_us, name='contact_us'),
     path('dashboard', views.dashboard, name='dashboard'),
     path('all_sales_person', views.all_sales_person, name='all_sales_person'),
     path('sales-data/', views.sales_data, name='sales_data'),

@@ -39,21 +39,26 @@
                         {% csrf_token %}
                         <div id="productFields">
                             <!-- Initial product and quantity fields -->
-                            <div class="product-entry">
+                            <div class=" product-entry">
+                                
                                 <label for="product">Product:</label>
-                                <input type="text" name="product[]" placeholder="Product Name" class="product-input" required autocomplete="off">
-                                <div class="suggestions"></div>
+                                <input  type="text" name="product[]" placeholder="Product Name" class="product-input form-control" required autocomplete="off">
+                            
+                                <div class="mb-3 suggestions"></div>
 
                                 <label for="quantity">Quantity:</label>
-                                <input type="number" name="quantity[]" placeholder="Quantity" required>
+                                <input class="form-control" type="number" name="quantity[]" placeholder="Quantity" required>
 
                                 <span class="error"></span>
-                                <span class="delete-product" onclick="deleteProduct(this)">Delete</span>
+                                
                             </div>
                         </div>
+                        
+                            <span class="delete-product btn btn-danger" style="color:white"  onclick="deleteProduct(this)">Delete</span>
+                        
 
-                        <button type="button" id="addProduct">Add Another Product</button>
-                        <button type="submit">Submit</button>
+                        <button class="btn btn-primary" type="button" id="addProduct">Add Another Product</button>
+                        <button type="submit" class="btn btn-success">Submit</button>
                     </form>
                     </div>
                 </div>
@@ -74,7 +79,7 @@
             productInput.setAttribute('type', 'text');
             productInput.setAttribute('name', 'product[]');
             productInput.setAttribute('placeholder', 'Product Name');
-            productInput.classList.add('product-input');
+            productInput.classList.add('product-input form-control');
             productInput.required = true;
             productInput.setAttribute('autocomplete', 'off');
 
@@ -84,6 +89,7 @@
             const quantityInput = document.createElement('input');
             quantityInput.setAttribute('type', 'number');
             quantityInput.setAttribute('name', 'quantity[]');
+
             quantityInput.setAttribute('placeholder', 'Quantity');
             quantityInput.required = true;
 

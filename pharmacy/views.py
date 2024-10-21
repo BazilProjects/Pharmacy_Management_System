@@ -768,3 +768,39 @@ def home(request):
 def financial_statement(request):
     return render(request, 'pharmacy/financial_statement.html')
 
+
+
+def contact_us(request):
+    if request.method=='POST':
+        try:
+            subject = "Contact LECZ-PharmaSuite(LPS) Support/Sales"
+            message = request.POST.get('message')
+            name = request.POST.get('name')
+            email = request.POST.get('email')
+            print(message)
+            message=f'{message}............\nreply to {email}\nBy name {name}'
+            try:
+                send_mail(
+                    subject,
+                    message,
+                    settings.EMAIL_HOST_USER,
+                    ['pearljob@gmail.com', 'pearlvibe@gmail.com'],
+                    fail_silently=False,
+                )
+                send_mail(
+                    subject,
+                    f'Dear {name},\n Your message has been received successfully. We will be contacting you soon! Have a lovely day',
+                    settings.EMAIL_HOST_USER,
+                    [f'{email}'],
+                    fail_silently=False,
+                )
+            except Exception as e:
+                print(f"Error sending mail: {e}")
+
+            messages.success(request, f'We have recived your message, You will recive and email confirming it soon, Have a lovely day')
+            return redirect('/')
+        except:
+            messages.success(request, f'Dear {name},\n Sorry But there may be an error in the System, \n Please Contact me on pearljob@gmail.com')
+            return redirect('/')
+    context={}
+    return render(request,'pharmacy/contact_us.html',context)
