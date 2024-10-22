@@ -4,3 +4,4 @@ django_jinja
 django-crispy-forms
 whitenoise
 django_select2
+xhtml2pdf
