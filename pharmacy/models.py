@@ -86,9 +86,7 @@ class Sale(models.Model):
         ('pending', 'Pending'),
         ('completed', 'Completed'),
     ]
-    
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, null=True, blank=True)
-    quantity = models.IntegerField(null=True, blank=True)
+    transaction_hash=models.CharField(max_length=3,null=True,blank=True)
     total_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     date_of_sale = models.DateTimeField(auto_now_add=True)
     salesperson = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
@@ -96,7 +94,16 @@ class Sale(models.Model):
     pharmacy = models.ForeignKey(Pharmacy, on_delete=models.CASCADE, null=True, blank=True, related_name='sales')  # Associate with a pharmacy
 
     def __str__(self):
-        return f"Sale of {self.product} by {self.salesperson} on {self.date_of_sale}"
+        return f"Sale of {self.transaction_hash} by {self.salesperson} on {self.date_of_sale}"
+
+
+class SaleProduct(models.Model):
+    sale = models.ForeignKey(Sale, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, null=True, blank=True)
+    quantity = models.IntegerField(null=True, blank=True)
+    price =  models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    def __str__(self):
+        return f'{self.quantity} units of {self.product.name} in Sale {self.sale.id}'
 
 
 class SaleReversal(models.Model):

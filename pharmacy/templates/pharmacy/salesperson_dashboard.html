@@ -40,15 +40,18 @@
                         <div id="productFields">
                             <!-- Initial product and quantity fields -->
                             <div class=" product-entry">
-                                
+                                <div class=" row">
+                                <div class="col-md-6">
                                 <label for="product">Product:</label>
                                 <input  type="text" name="product[]" placeholder="Product Name" class="product-input form-control" required autocomplete="off">
+                            </div>
                             
                                 <div class="mb-3 suggestions"></div>
-
+                                <div class="col-md-6">
                                 <label for="quantity">Quantity:</label>
                                 <input class="form-control" type="number" name="quantity[]" placeholder="Quantity" required>
-
+                            </div>
+                        </div>
                                 <span class="error"></span>
                                 
                             </div>
@@ -74,12 +77,16 @@
         document.getElementById('addProduct').addEventListener('click', function () {
             const productEntryDiv = document.createElement('div');
             productEntryDiv.classList.add('product-entry');
+            const rowdiv = document.createElement('div');
+            rowdiv.classList.add('row');
+            const columndiv = document.createElement('div');
+            columndiv.classList.add('col-md-6');
 
             const productInput = document.createElement('input');
             productInput.setAttribute('type', 'text');
             productInput.setAttribute('name', 'product[]');
             productInput.setAttribute('placeholder', 'Product Name');
-            productInput.classList.add('product-input form-control');
+            productInput.classList.add('product-input','form-control');
             productInput.required = true;
             productInput.setAttribute('autocomplete', 'off');
 
@@ -96,6 +103,10 @@
             const errorSpan = document.createElement('span');
             errorSpan.classList.add('error');
 
+
+            productEntryDiv.appendChild(rowdiv);
+            console.log('See what happended');
+            productEntryDiv.appendChild(columndiv);
             productEntryDiv.appendChild(productInput);
             productEntryDiv.appendChild(suggestionsDiv);
             productEntryDiv.appendChild(quantityInput);

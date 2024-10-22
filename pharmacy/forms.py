@@ -20,7 +20,7 @@ from django_select2.forms import Select2Widget
 
 class SaleForm(forms.ModelForm):
     class Meta:
-        model = Sale
+        model = SaleProduct
         fields = ['product', 'quantity']
         widgets = {
             'product': Select2Widget,  # Use Select2 widget for product field
@@ -43,7 +43,7 @@ class SaleForm(forms.ModelForm):
 
 from django.forms import modelformset_factory
 
-SaleFormSet = modelformset_factory(Sale, form=SaleForm, extra=5)  # Adjust 'extra' to the number of forms you want to display by default
+SaleFormSet = modelformset_factory(SaleProduct, form=SaleForm, extra=5)  # Adjust 'extra' to the number of forms you want to display by default
 
 
 class PharmacyForm(forms.ModelForm):

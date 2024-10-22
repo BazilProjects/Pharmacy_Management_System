@@ -24,7 +24,8 @@ urlpatterns = [
     path('add-supplier/', views.add_supplier, name='add_supplier'),
     path('edit-supplier/<int:product_id>/', views.edit_supplier, name='edit_supplier'),
 
-
+    path('cashier_dashboard',views.cashier_dashboard,name='cashier_dashboard'),
+    path('generate-receipt/', views.generate_pdf_view, name='generate_receipt'),
 
     path('all_pharmacy', views.all_pharmacy, name='all_pharmacy'),
     path('add-pharmacy/', views.add_pharmacy, name='add_pharmacy'),

@@ -768,6 +768,8 @@ def home(request):
 def financial_statement(request):
     return render(request, 'pharmacy/financial_statement.html')
 
+def cashier_dashboard(request):
+    return render(request, 'pharmacy/cashier_dashboard.html')
 
 
 def contact_us(request):
@@ -804,3 +806,34 @@ def contact_us(request):
             return redirect('/')
     context={}
     return render(request,'pharmacy/contact_us.html',context)
+
+
+from django.http import HttpResponse
+from django.template.loader import get_template
+from xhtml2pdf import pisa
+
+def generate_pdf_view(request):
+    template_path = 'pharmacy/receipt.html'  # Create this template with your receipt design
+    context = {
+        'products': [
+            {'name': 'Product 1', 'quantity': 2, 'price': 50},
+            {'name': 'Product 2', 'quantity': 1, 'price': 100},
+        ],
+        'total': 200,
+        'date': '2024-10-21',
+    }
+
+    # Load the HTML template
+    template = get_template(template_path)
+    html = template.render(context)
+
+    # Create a PDF object
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'inline; filename="receipt.pdf"'
+
+    # Convert HTML to PDF
+    pisa_status = pisa.CreatePDF(html, dest=response)
+
+    if pisa_status.err:
+        return HttpResponse('We had some errors with the PDF generation <pre>' + html + '</pre>')
+    return response

@@ -1,0 +1,151 @@
+{% extends 'pharmacy/base/base_combined.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block content %}
+        <div class="container">
+          <div class="page-inner">
+            <div class="page-header">
+              <h3 class="fw-bold mb-3">Cashier</h3>
+              <ul class="breadcrumbs mb-3">
+                <li class="nav-home">
+                  <a href="{% url 'dashboard' %}">
+                    <i class="icon-home">&nbspDashboard</i>
+                  </a>
+                </li>
+                <li class="separator">
+                  <i class="icon-arrow-right"></i>
+                </li>
+
+                <li class="separator">
+                  <i class="icon-arrow-right"></i>
+                </li>
+              </ul>
+            </div>
+            <div class="row">
+              <div class="col-md-12">
+                <div class="card">
+                  <div class="card-header">
+                    <div class="d-flex align-items-center">
+                      <h4 class="card-title">Cashier LECZ-PharmaSuite(LPS)</h4>
+                      <a href="{% url 'add_category' %}" 
+                        class="btn btn-danger btn-round ms-auto"
+                        data-bs-toggle="modal"
+                        data-bs-target="#addRowModal"
+                      >
+                        <i class="fa fa-plus"></i>
+                        Subscribe
+                      </a>
+                    </div>
+                  </div>
+                  
+                    <style>
+                      body {
+                        font-family: Arial, sans-serif;
+                      }
+                      .receipt-container {
+                        
+                        margin: 0 auto;
+                        padding: 20px;
+                        border: 1px solid #ddd;
+                        background-color: #f9f9f9;
+                      }
+                      h2 {
+                        text-align: center;
+                        margin-bottom: 20px;
+                      }
+                      table {
+                        width: 100%;
+                        border-collapse: collapse;
+                      }
+                      th, td {
+                        text-align: left;
+                        padding: 8px;
+                        border-bottom: 1px solid #ddd;
+                      }
+                      th {
+                        background-color: #f2f2f2;
+                      }
+                      .total {
+                        font-weight: bold;
+                      }
+                      .footer {
+                        text-align: center;
+                        margin-top: 20px;
+                      }
+                      .button-container {
+                        margin-top: 20px;
+                        text-align: center;
+                      }
+
+                      .verify-button {
+                        margin: 5px;
+                        padding: 10px 20px;
+                        font-size: 16px;
+                        cursor: pointer;
+                        background-color: #4CAF50;
+                        color: white;
+                      }
+                      .print-button {
+                        margin: 5px;
+                        padding: 10px 20px;
+                        font-size: 16px;
+                        cursor: pointer;
+                        background-color: #2196F3;
+                        color: white;
+                      }
+                      .cancel-button {
+                        margin: 5px;
+                        padding: 10px 20px;
+                        font-size: 16px;
+                        cursor: pointer;
+                        background-color: #f44336;
+                        color: white;
+                      }
+                    </style>
+
+
+                    <div class="receipt-container col-md-12">
+                      <h2>Store Name</h2>
+                      <p><strong>Date:</strong> {{ date }}</p>
+                      <table>
+                          <thead>
+                              <tr>
+                                  <th>Product</th>
+                                  <th>Quantity</th>
+                                  <th>Price</th>
+                              </tr>
+                          </thead>
+                          <tbody>
+                              {% for product in products %}
+                              <tr>
+                                  <td>{{ product.name }}</td>
+                                  <td>{{ product.quantity }}</td>
+                                  <td>${{ product.price }}</td>
+                              </tr>
+                              {% endfor %}
+                          </tbody>
+                          <tfoot>
+                              <tr>
+                                  <td colspan="2" class="total">Total:</td>
+                                  <td class="total">${{ total }}</td>
+                              </tr>
+                          </tfoot>
+                      </table>
+                  
+                      <div class="button-container col-md-12">
+                        <a href="{% url 'generate_receipt' %}" target="_blank" class="print-button"> Verify and Print Receipt</a>
+                        <a class="cancel-button" href="">Cancel Order</a>
+                        <br>
+                         <br>
+                          <br>
+                        <p>Thank you for shopping!</p>
+                      </div>
+                    </div>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+{% endblock %}
