@@ -29,7 +29,7 @@ SECRET_KEY = 'django-insecure-n5k64x1k-203=bs)f3d2)+%96h8x+g!jo_&11gz5hu)u%b(-cg
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['pharmacy-management-system-iowy.onrender.com','*']
+ALLOWED_HOSTS = ['pharmacy-management-system-iowy.onrender.com','pharmasuite.lecz.ltd','*']
 
 
 # Application definition
