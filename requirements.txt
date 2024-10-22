@@ -5,3 +5,4 @@ django-crispy-forms
 whitenoise
 django_select2
 xhtml2pdf
+crispy-bootstrap4

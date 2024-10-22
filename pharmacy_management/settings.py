@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.sitemaps',
     'django_jinja',
     'crispy_forms',
+    'crispy_bootstrap4',
     'pharmacy',
 ]
 
