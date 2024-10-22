@@ -166,7 +166,7 @@ def dashboard(request):
     last_day_of_month = (first_day_of_month + timedelta(days=32)).replace(day=1) - timedelta(days=1)
 
     current_month_revenue = Sale.objects.filter(date_of_sale__range=(first_day_of_month, last_day_of_month)).aggregate(total_revenue=Sum('total_price'))['total_revenue'] or int(0)
-    current_month_gross_profit = Sale.objects.filter(date_of_sale__range=(first_day_of_month, last_day_of_month)).annotate(
+    current_month_gross_profit = SaleProduct.objects.filter(date_of_sale__range=(first_day_of_month, last_day_of_month)).annotate(
         gross_profit=F('total_price') - F('product__cost_price')
     ).aggregate(total_gross_profit=Sum('gross_profit'))['total_gross_profit'] or int(0)
     fixed_expenses = 0  # Example fixed expenses for the month
