@@ -788,6 +788,11 @@ def financial_statement(request):
 def cashier_dashboard(request):
     return render(request, 'pharmacy/cashier_dashboard.html')
 
+def billing(request):
+    return render(request, 'pharmacy/billing.html')
+
+def subscribe(request):
+    return render(request, 'pharmacy/subscribe.html')
 
 def contact_us(request):
     if request.method=='POST':
