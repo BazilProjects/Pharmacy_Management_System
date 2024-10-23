@@ -161,14 +161,28 @@ def get_today_sales_and_revenue(pharmacy):
 
 @login_required
 def dashboard(request):
+    
+    # Current date and time
     today = timezone.now()
+
+    # Calculate the first and last day of the current month
     first_day_of_month = today.replace(day=1)
     last_day_of_month = (first_day_of_month + timedelta(days=32)).replace(day=1) - timedelta(days=1)
 
-    current_month_revenue = Sale.objects.filter(date_of_sale__range=(first_day_of_month, last_day_of_month)).aggregate(total_revenue=Sum('total_price'))['total_revenue'] or int(0)
-    current_month_gross_profit = SaleProduct.objects.filter(date_of_sale__range=(first_day_of_month, last_day_of_month)).annotate(
-        gross_profit=F('total_price') - F('product__cost_price')
-    ).aggregate(total_gross_profit=Sum('gross_profit'))['total_gross_profit'] or int(0)
+    # Calculate the total revenue for the current month
+    current_month_revenue = Sale.objects.filter(date_of_sale__range=(first_day_of_month, last_day_of_month)).aggregate(total_revenue=Sum('total_price'))['total_revenue'] or 0
+
+    # Calculate the total gross profit for the current month
+    current_month_gross_profit = SaleProduct.objects.filter(
+        sale__date_of_sale__range=(first_day_of_month, last_day_of_month)
+    ).annotate(
+        gross_profit=F('price') * F('quantity') - F('product__cost_price') * F('quantity')
+    ).aggregate(total_gross_profit=Sum('gross_profit'))['total_gross_profit'] or 0
+
+    # Print or return the results as needed
+    print(f"Current Month Revenue: {current_month_revenue}")
+    print(f"Current Month Gross Profit: {current_month_gross_profit}")
+
     fixed_expenses = 0  # Example fixed expenses for the month
     current_month_net_profit = current_month_gross_profit - fixed_expenses
 
@@ -184,9 +198,12 @@ def dashboard(request):
     sales_count = sales.count()  # Get the total count of sales
 
     total_sales_price = sales.aggregate(Sum('total_price'))['total_price__sum'] or 0
-    pharmacy = request.user.pharmacy
+    try:
+        pharmacy = request.user.pharmacy
 
-    total_sales, total_revenue = get_today_sales_and_revenue(pharmacy)
+        total_sales, total_revenue = get_today_sales_and_revenue(pharmacy)
+    except:
+        total_sales, total_revenue= 0,0
     context={
         'total_sales': total_sales,
         'total_sales_price':total_sales_price,
