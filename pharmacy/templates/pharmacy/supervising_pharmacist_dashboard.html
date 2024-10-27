@@ -1,0 +1,306 @@
+{% extends 'pharmacy/base/base_combined.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block content %}
+        <div class="container">
+          <div class="page-inner">
+            <div class="page-header">
+              <h3 class="fw-bold mb-3">AURGENT ATTENSION</h3>
+              <ul class="breadcrumbs mb-3">
+                <li class="nav-home">
+                  <a href="{% url 'dashboard' %}">
+                    <i class="icon-home">&nbspDashboard</i>
+                  </a>
+                </li>
+                <li class="separator">
+                  <i class="icon-arrow-right"></i>
+                </li>
+                <li class="nav-item">
+                  <a href="{% url 'add_product' %}">Add Drugs</a>
+                </li>
+                <li class="separator">
+                  <i class="icon-arrow-right"></i>
+                </li>
+              </ul>
+            </div>
+            <div class="row">
+              <div class="col-md-12">
+                <div class="card">
+                  <div class="card-header">
+                    <div class="d-flex align-items-center">
+                      <h4 class="card-title">Recently Sole Prescription and Opiods</h4>
+                    </div>
+                  </div>
+                  <div class="card-body">
+                    <!-- Modal -->
+                    <div
+                      class="modal fade"
+                      id="addRowModal"
+                      tabindex="-1"
+                      role="dialog"
+                      aria-hidden="true"
+                    >
+                      <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                          <div class="modal-header border-0">
+                            <h5 class="modal-title">
+                              <span class="fw-mediumbold"> New</span>
+                              <span class="fw-light"> Row </span>
+                            </h5>
+                            <button
+                              type="button"
+                              class="close"
+                              data-dismiss="modal"
+                              aria-label="Close"
+                            >
+                              <span aria-hidden="true">&times;</span>
+                            </button>
+                          </div>
+                          <div class="modal-body">
+                            <p class="small">
+                              Create a new row using this form, make sure you
+                              fill them all
+                            </p>
+                            <form method="POST" action="{% url 'add_product' %}">
+
+                                    {% csrf_token %}
+                                    {{ form|crispy }}
+                                    <div class="card-footer">
+                                      <button class="btn btn-primary w-100" type="submit">
+                                        <b>Add Product</b>
+                                      </button>
+                                    </div>
+
+                            </form>
+
+                          </div>
+                          <!--
+                          <div class="modal-footer border-0">
+                            <button
+                              type="button"
+                              id="addRowButton"
+                              class="btn btn-primary"
+                            >
+                              Add
+                            </button>
+                            <button
+                              type="button"
+                              class="btn btn-danger"
+                              data-dismiss="modal"
+                            >
+                              Close
+                            </button>
+                          </div>
+                        -->
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="table-responsive">
+                      <table
+                        id="add-row"
+                        class="display table table-striped table-hover"
+                      >
+                        <thead>
+                          <tr>
+                            <th>Name</th>
+                            <th>Category</th>
+                            <th>Supplier</th>
+                            <th>Stock</th>
+                            <th>Selling Price</th>
+                            <th>Cost Price</th>
+                            <th>Expiry Date</th>
+                            <th style="width: 10%">Edit</th>
+                            <th style="width: 10%">Delete</th>
+                          </tr>
+                        </thead>
+
+                        <tbody>
+                          {% for drug in drugs %}
+                          <tr>
+                            <td>{{ drug.name}}</td>
+                            <td>{{ drug.category.name}}</td>
+                            <td>{{ drug.supplier.name}}</td>
+                            <td>{{ drug.stock}}</td>
+                            <td>{{ drug.price}}</td>
+                            <td>{{ drug.cost_price}}</td>
+                            <td>{{ drug.expiry_date}}</td>
+                            <td>
+                              <div class="form-button-action">
+                                <a href="{% url 'edit_product' drug.id %}" 
+                                  type="button"
+                                  data-bs-toggle="tooltip"
+                                  title=""
+                                  class="btn btn-link btn-primary btn-lg"
+                                  data-original-title="Edit Task"
+                                >
+                                  <i class="fa fa-edit"></i>
+                                </a>
+                                </div>
+                            </td>
+                            <td>
+                              <div class="form-button-action">
+                                <a href="{% url 'delete_product' drug.id %}" 
+                                  type="button"
+                                  data-bs-toggle="tooltip"
+                                  title=""
+                                  class="btn btn-link btn-danger"
+                                  data-original-title="Remove"
+                                >
+                                  <i class="fa fa-times"></i>
+                                </a>
+                              </div>
+                            </td>
+                          </tr>
+                          {% endfor %}
+
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-12">
+                <div class="card">
+                  <div class="card-header">
+                    <div class="d-flex align-items-center">
+                      <h4 class="card-title">All Drugs Recently Sold</h4>
+
+                    </div>
+                  </div>
+                  <div class="card-body">
+                    <!-- Modal -->
+                    <div
+                      class="modal fade"
+                      id="addRowModal"
+                      tabindex="-1"
+                      role="dialog"
+                      aria-hidden="true"
+                    >
+                      <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                          <div class="modal-header border-0">
+                            <h5 class="modal-title">
+                              <span class="fw-mediumbold"> New</span>
+                              <span class="fw-light"> Row </span>
+                            </h5>
+                            <button
+                              type="button"
+                              class="close"
+                              data-dismiss="modal"
+                              aria-label="Close"
+                            >
+                              <span aria-hidden="true">&times;</span>
+                            </button>
+                          </div>
+                          <div class="modal-body">
+                            <p class="small">
+                              Create a new row using this form, make sure you
+                              fill them all
+                            </p>
+                            <form method="POST" action="{% url 'add_product' %}">
+
+                                    {% csrf_token %}
+                                    {{ form|crispy }}
+                                    <div class="card-footer">
+                                      <button class="btn btn-primary w-100" type="submit">
+                                        <b>Add Product</b>
+                                      </button>
+                                    </div>
+
+                            </form>
+
+                          </div>
+                          <!--
+                          <div class="modal-footer border-0">
+                            <button
+                              type="button"
+                              id="addRowButton"
+                              class="btn btn-primary"
+                            >
+                              Add
+                            </button>
+                            <button
+                              type="button"
+                              class="btn btn-danger"
+                              data-dismiss="modal"
+                            >
+                              Close
+                            </button>
+                          </div>
+                        -->
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="table-responsive">
+                      <table
+                        id="add-row"
+                        class="display table table-striped table-hover"
+                      >
+                        <thead>
+                          <tr>
+                            <th>Name</th>
+                            <th>Category</th>
+                            <th>Supplier</th>
+                            <th>Stock</th>
+                            <th>Selling Price</th>
+                            <th>Cost Price</th>
+                            <th>Expiry Date</th>
+                            <th style="width: 10%">Edit</th>
+                            <th style="width: 10%">Delete</th>
+                          </tr>
+                        </thead>
+
+                        <tbody>
+                          {% for drug in drugs %}
+                          <tr>
+                            <td>{{ drug.name}}</td>
+                            <td>{{ drug.category.name}}</td>
+                            <td>{{ drug.supplier.name}}</td>
+                            <td>{{ drug.stock}}</td>
+                            <td>{{ drug.price}}</td>
+                            <td>{{ drug.cost_price}}</td>
+                            <td>{{ drug.expiry_date}}</td>
+                            <td>
+                              <div class="form-button-action">
+                                <a href="{% url 'edit_product' drug.id %}" 
+                                  type="button"
+                                  data-bs-toggle="tooltip"
+                                  title=""
+                                  class="btn btn-link btn-primary btn-lg"
+                                  data-original-title="Edit Task"
+                                >
+                                  <i class="fa fa-edit"></i>
+                                </a>
+                                </div>
+                            </td>
+                            <td>
+                              <div class="form-button-action">
+                                <a href="{% url 'delete_product' drug.id %}" 
+                                  type="button"
+                                  data-bs-toggle="tooltip"
+                                  title=""
+                                  class="btn btn-link btn-danger"
+                                  data-original-title="Remove"
+                                >
+                                  <i class="fa fa-times"></i>
+                                </a>
+                              </div>
+                            </td>
+                          </tr>
+                          {% endfor %}
+
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+{% endblock %}

@@ -26,6 +26,13 @@ from django.http import JsonResponse
 from django.http import JsonResponse
 from .models import Product
 from django.http import JsonResponse
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
+
+from django.shortcuts import render, redirect
+from django.http import JsonResponse
+from .utils import make_paypal_payment, verify_paypal_payment
 
 from django.http import HttpResponse
 def drug_suggestions(request):
@@ -81,17 +88,22 @@ def sales_data(request):
 
 def admin_signup(request):
     if request.method == 'POST':
-        form = CustomAdminSignUpForm(request.POST)
-        if form.is_valid():
-            user = form.save()  # No commit argument needed now
-            user.role = 'admin'  # Assign the role from the URL parameter
-            user.save()
+        username = request.POST['username']
+        password = request.POST['password']
+
+        # Create a new user
+        if User.objects.filter(username=username).exists():
+            messages.error(request, 'Username already exists.')
+        else:
+            user = User.objects.create_user(username=username, password=password,role='admin')
+            messages.success(request, 'Account created successfully!')
             login(request, user)  # Log the user in after registration
-            return redirect('dashboard')  # Redirect to some admin dashboard after sign-up
+            return redirect('subscribe')
     else:
-        form = CustomAdminSignUpForm()
+        #form = CustomAdminSignUpForm()
+        pass
     
-    return render(request, 'pharmacy/register_admin.html', {'form': form})
+    return render(request, 'pharmacy/register_admin.html', {})
 
 
 
@@ -139,6 +151,27 @@ def salesperson_signup(request, group_id):
 
     context={'form': form, 'group': group}
     return render(request, 'pharmacy/register_sales_person.html', context)
+
+
+def supervising_pharmacist_signup(request, group_id):
+    group = Pharmacy.objects.get(id=group_id)
+
+    if request.method == 'POST':
+        form = CustomAdminSignUpForm(request.POST)
+        if form.is_valid():
+            user = form.save()  # No commit argument needed now
+            user.role = 'supervising_pharmacist'  # Set role as salesperson
+            user.pharmacy=group  # Add the user to the specified group
+            user.save() 
+            login(request, user)
+            group.supervised_by=user
+            group.save()
+            return redirect('supervising_pharmacist_dashboard')  # Redirect to salesperson's dashboard after sign-up
+    else:
+        form = CustomAdminSignUpForm()
+
+    context={'form': form, 'group': group}
+    return render(request, 'pharmacy/supervising_pharmacist.html', context)
 
 
 
@@ -264,6 +297,9 @@ def all_sales_person(request):
 
     return render(request, 'pharmacy/all_sales_person.html',context)
 
+
+
+
 @login_required
 def all_pharmacy(request):
     #pharmacy=request.user.pharmacy
@@ -341,8 +377,8 @@ def login_view(request):
                     return redirect('dashboard')
                 elif user.role == 'salesperson':
                     return redirect('salesperson_dashboard')
-                else:
-                    return redirect('dashboard')
+                elif user.role == 'supervising_pharmacist':
+                    return redirect('supervising_pharmacist_dashboard')
     else:
         form = CustomLoginForm()
     context={'form':form,}
@@ -410,6 +446,48 @@ def salesperson_dashboard(request):
             'total_sales': total_sales,
         }
         return render(request, 'pharmacy/salesperson_dashboard.html', context)
+# Salesperson Dashboard View
+@login_required
+def supervising_pharmacist_dashboard(request):
+    context={}
+    if request.user.role!='supervising_pharmacist':
+        return redirect('login')
+    else:
+        # Get total sales made by this salesperson
+        Pharmacies=Pharmacy.objects.all().filter(supervised_by=request.user)
+        try:
+            Pharmacies1 = Pharmacy.objects.filter(supervised_by =request.user).order_by('-created_at')[0]
+            from django.db.models import Q
+
+            # Query SaleProduct where related Product has 'prescription_base' in its tags
+            prescription_drugs_sold_1 = SaleProduct.objects.all().filter(products__pharmacy=Pharmacies1).filter(
+                product__tags='prescription_based'
+            )
+            context = {
+                'Pharmacies1': Pharmacies1,
+                'prescription_drugs_sold_1': prescription_drugs_sold_1,
+                }
+            context=context | context
+        except:
+            pass
+        try:
+            Pharmacies2 = Pharmacy.objects.filter(supervised_by =request.user).order_by('-created_at')[1]
+            from django.db.models import Q
+
+            # Query SaleProduct where related Product has 'prescription_base' in its tags
+            prescription_drugs_sold_2 = SaleProduct.objects.all().filter(products__pharmacy=Pharmacies2).filter(
+                product__tags='prescription_based'
+            )
+            context = {
+                'Pharmacies2': Pharmacies2,
+                'prescription_drugs_sold_2': prescription_drugs_sold_2,
+                }
+            context=context | context
+        except:
+            pass
+        
+        
+        return render(request, 'pharmacy/supervising_pharmacist_dashboard.html', context)
 
 # Sales Reversal Request (Salesperson)
 @login_required
@@ -790,9 +868,25 @@ def cashier_dashboard(request):
 
 def billing(request):
     return render(request, 'pharmacy/billing.html')
-
+@login_required
 def subscribe(request):
     return render(request, 'pharmacy/subscribe.html')
+from django.contrib.auth.forms import UserCreationForm
+@login_required
+def profile(request):
+    user= User.objects.get(username=request.user.username) 
+    print(user)
+    if request.method == 'POST':
+        form = ProfileForm(request.POST, request.FILES, instance=user)
+        if form.is_valid():
+
+            form.save()
+            print('Profile Saved')
+            return redirect('profile')
+    else:
+        form = ProfileForm(instance=user)
+    context={'form':form,'user':user}
+    return render(request, 'pharmacy/profile.html',context)
 
 def contact_us(request):
     if request.method=='POST':
@@ -859,3 +953,36 @@ def generate_pdf_view(request):
     if pisa_status.err:
         return HttpResponse('We had some errors with the PDF generation <pre>' + html + '</pre>')
     return response
+
+
+
+
+
+def create_payment(request,amount):
+    if request.method == 'POST':
+        amount = amount  # $20 for example
+        success, payment_id, approval_url = make_paypal_payment(
+            amount=amount,
+            currency="USD",
+            return_url="http://localhost:8000/paypal/success/",
+            cancel_url="http://localhost:8000/paypal/cancel/"
+        )
+
+        if success:
+            # Redirect to PayPal approval URL
+            return redirect(approval_url)
+        else:
+            return JsonResponse({'success': False, 'message': 'Payment creation failed'})
+    
+    #return render(request, 'payments/create_payment.html')
+
+
+def success_payment(request):
+    payment_id = request.GET.get('paymentId')
+    if verify_paypal_payment(payment_id):
+        return JsonResponse({'success': True, 'message': 'Payment successful'})
+    else:
+        return JsonResponse({'success': False, 'message': 'Payment verification failed'})
+
+def cancel_payment(request):
+    return JsonResponse({'success': False, 'message': 'Payment cancelled'})

@@ -21,6 +21,13 @@ class Pharmacy(models.Model):
         null=True,
         related_name='pharmacies'   # This allows reverse lookup
     )
+    supervised_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,  # Use AUTH_USER_MODEL for the custom user model
+        on_delete=models.CASCADE,   # Define the behavior on user deletion
+        blank=True,
+        null=True,
+        related_name='super_vising_pharmacist'   # This allows reverse lookup
+    )
 
     def __str__(self):
         return self.name
@@ -31,11 +38,14 @@ class User(AbstractUser):
         ('admin', 'Admin'),
         ('salesperson', 'Salesperson'),
         ('manager', 'Manager'),  # Added manager role
+        ('cashier','Cashier'),
+        ('supervising_pharmacist','Supervising_Pharmacist'),
     )
     
-    role = models.CharField(max_length=15, choices=ROLES)
+    role = models.CharField(max_length=25, choices=ROLES)
     suspended = models.BooleanField(default=False)
     pharmacy = models.ForeignKey(Pharmacy, on_delete=models.CASCADE, null=True, blank=True, related_name='creators_users')
+    image=models.ImageField(upload_to='media/user_profile/', null=True, blank=True)
 
     def __str__(self):
         return self.username
@@ -63,6 +73,13 @@ class Supplier(models.Model):
 
 
 class Product(models.Model):
+    known_tags = (
+        ('opiods', 'Opiods'),
+        ('overthecounter', 'OverTheCounter'),
+        ('manager', 'Manager'),  # Added manager role
+        ('cashier','Cashier'),
+        ('supervising_pharmacist','Supervising_Pharmacist'),
+    )
     name = models.CharField(max_length=100, null=True, blank=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True, blank=True)
     supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE, null=True, blank=True)
@@ -74,6 +91,8 @@ class Product(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     pharmacy = models.ForeignKey(Pharmacy, on_delete=models.CASCADE, null=True, blank=True, related_name='products')  # Associate with a pharmacy
 
+    
+    tags = models.CharField(max_length=25, choices=known_tags, default='overthecounter')
     def is_expired(self):
         return self.expiry_date < datetime.date.today()
 

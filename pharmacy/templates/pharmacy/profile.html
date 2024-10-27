@@ -1,0 +1,63 @@
+{% extends 'pharmacy/base/base_combined.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block content %}
+
+
+
+      <div class="container">
+        <div class="page-inner">
+          <div class="page-header">
+            <h3 class="fw-bold mb-3">Profile</h3>
+            <ul class="breadcrumbs mb-3">
+              <li class="nav-home">
+                <a href="#">
+                  <i class="icon-home"></i>
+                </a>
+              </li>
+              <li class="separator">
+                <i class="icon-arrow-right"></i>
+              </li>
+              <li class="nav-item">
+                <a href="{% url 'dashboard' %}">Dashboard</a>
+              </li>
+              <li class="separator">
+                <i class="icon-arrow-right"></i>
+              </li>
+              <li class="nav-item">
+                <a href="{% url 'home' %}">Home</a>
+              </li>
+            </ul>
+          </div>
+          <form method="POST">
+            {% csrf_token %}
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="card">
+                    
+                    <p class="demo" >
+                    <div class="avatar avatar-xxl" style="align-content: center;">
+                        {% if user.image and user.image.value %}
+                            <img src="{{ user.image.url }}" alt="User image" class="avatar-img rounded-circle">
+                        {% else %}
+                            <img src="{% static 'assets/img/examples/example6.jpeg' %}" alt="Default image" class="avatar-img rounded-circle">
+                        {% endif %}
+                    </div>
+
+                  </p>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="card">
+                    {{form|crispy}}
+                  </div>
+                </div>
+                <div class="col-md-12" style="text-align: center;">
+                  <button class="btn btn-danger" type="submit">Save Changes</button>
+                </div>
+              </div>
+          </form>
+        </div>
+      </div>
+      
+{% endblock %}

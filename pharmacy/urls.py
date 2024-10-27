@@ -4,6 +4,14 @@ from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     path('', views.home, name='home'),
+
+
+    #supervising pharmarcist
+    path('supervising_pharmacist_dashboard', views.supervising_pharmacist_dashboard, name='supervising_pharmacist_dashboard'),
+
+
+
+    path('profile',views.profile,name='profile'),
     path('subscribe', views.subscribe, name='subscribe'),
     path('billing', views.billing, name='billing'),
     path('contact_us', views.contact_us, name='contact_us'),
@@ -59,4 +67,10 @@ urlpatterns = [
     #
     # Salesperson sign-up URL, takes group_id as a parameter
     path('salesperson/signup/<int:group_id>/', views.salesperson_signup, name='salesperson_signup'),
+
+
+    #payments
+    path('paypal/create/', views.create_payment, name='create_payment'),
+    path('paypal/success/', views.success_payment, name='success_payment'),
+    path('paypal/cancel/', views.cancel_payment, name='cancel_payment'),
 ]

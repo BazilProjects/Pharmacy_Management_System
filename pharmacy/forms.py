@@ -2,7 +2,10 @@ from django import forms
 from .models import *
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
-from .models import User
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
+
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm
 
@@ -121,6 +124,21 @@ class SupplierForm(forms.ModelForm):
         model = Supplier
         fields = ['name','contact','email']
 
+
+class ProfileForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = [
+            'username', 'first_name', 'last_name', 'email', 'image'
+        ]
+
+    def __init__(self, *args, **kwargs):
+        super(ProfileForm, self).__init__(*args, **kwargs)
+        # Customize field properties (optional)
+        #self.fields['role'].widget.attrs.update({'class': 'form-control'})
+        #self.fields['pharmacy'].widget.attrs.update({'class': 'form-control'})
+        self.fields['image'].widget.attrs.update({'class': 'form-control-file'})
+        #self.fields['suspended'].widget.attrs.update({'class': 'form-check-input'})
 
 
 
