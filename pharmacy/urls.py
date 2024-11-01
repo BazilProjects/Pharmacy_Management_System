@@ -8,6 +8,11 @@ urlpatterns = [
 
     #supervising pharmarcist
     path('supervising_pharmacist_dashboard', views.supervising_pharmacist_dashboard, name='supervising_pharmacist_dashboard'),
+    path('list_all_supervised_pharmacist',views.list_all_supervised_pharmacist,name='list_all_supervised_pharmacist'),
+    path('allow_sale/<int:id>/', views.allow_sale, name='allow_sale'),
+    path('revoke_sale/<int:id>/', views.revoke_sale, name='revoke_sale'),
+    path('allow_license/<int:id>/', views.allow_license, name='allow_license'),
+    path('revoke_license/<int:id>/', views.revoke_license, name='revoke_license'),
 
 
 
@@ -27,7 +32,7 @@ urlpatterns = [
 
     path('all_categories', views.all_category, name='all_categories'),
     path('add-category/', views.add_category, name='add_category'),
-    path('edit-category/<int:product_id>/', views.edit_category, name='edit_category'),
+    path('edit-category/<int:id>/', views.edit_category, name='edit_category'),
 
 
     path('all_supplier', views.all_supplier, name='all_supplier'),
@@ -73,4 +78,11 @@ urlpatterns = [
     path('paypal/create/', views.create_payment, name='create_payment'),
     path('paypal/success/', views.success_payment, name='success_payment'),
     path('paypal/cancel/', views.cancel_payment, name='cancel_payment'),
+
+
+    path('user/<str:username>/', views.private_chat, name='private_chat'),
+    path('group/<str:group_name>/', views.group_chat, name='group_chat'),
+
+
+
 ]

@@ -5,8 +5,18 @@
         <div class="container">
           <div class="page-inner">
             <div class="page-header">
-              <h3 class="fw-bold mb-3">All Drug Supplier</h3>
+              <h3 class="fw-bold mb-3">All Suppliers</h3>
               <ul class="breadcrumbs mb-3">
+                {% if user.role == 'supervising_pharmacist' %}
+                <li class="nav-home">
+                  <a href="{% url 'supervising_pharmacist_dashboard' %}">
+                    <i class="icon-home">&nbspDashboard</i>
+                  </a>
+                </li>
+                <li class="separator">
+                  <i class="icon-arrow-right"></i>
+                </li>
+                {% else %}
                 <li class="nav-home">
                   <a href="{% url 'dashboard' %}">
                     <i class="icon-home">&nbspDashboard</i>
@@ -15,12 +25,15 @@
                 <li class="separator">
                   <i class="icon-arrow-right"></i>
                 </li>
+                {% endif %}
+                {% if user.role != 'supervising_pharmacist' %}
                 <li class="nav-item">
                   <a href="{% url 'add_supplier' %}">Add Drug Supplier</a>
                 </li>
                 <li class="separator">
                   <i class="icon-arrow-right"></i>
                 </li>
+                {% endif %}
               </ul>
             </div>
             <div class="row">
@@ -28,7 +41,8 @@
                 <div class="card">
                   <div class="card-header">
                     <div class="d-flex align-items-center">
-                      <h4 class="card-title">All Supplier</h4>
+                      <h4 class="card-title">All Suppliers</h4>
+                      {% if user.role != 'supervising_pharmacist' %}
                       <a href="{% url 'add_supplier' %}" 
                         class="btn btn-primary btn-round ms-auto"
                         data-bs-toggle="modal"
@@ -37,6 +51,7 @@
                         <i class="fa fa-plus"></i>
                         Add Supplier
                       </a>
+                      {% endif %}
                     </div>
                   </div>
                   <div class="card-body">
@@ -113,8 +128,12 @@
                             <th>Name</th>
                             <th>Contact</th>
                             <th>Email</th>
+                            {% if user.role != 'supervising_pharmacist' %}
                             <th style="width: 10%">Edit</th>
                             <th style="width: 10%">Delete</th>
+                            {% else %}
+                            <th style="width: 10%">Licensed</th>
+                            {% endif %}
                           </tr>
                         </thead>
 
@@ -123,7 +142,9 @@
                           <tr>
                             <td>{{ drug.name}}</td>
                             <td>{{ drug.contact}}</td>
+    
                             <td>{{ drug.email}}</td>
+                            {% if user.role != 'supervising_pharmacist' %}
                             <td>
                               <div class="form-button-action">
                                 <a href="{% url 'edit_supplier' drug.id %}" 
@@ -150,6 +171,30 @@
                                 </a>
                               </div>
                             </td>
+                            {% else %}
+                              {% if drug.allow_sale == True %}
+                              <td>
+                                <div class="form-button-action">
+                                  <a href="{% url 'revoke_license' drug.id %}"
+                                  class="btn btn-primary" 
+                                  >
+                                    Yes (Revoke License)
+                                  </a>
+                                </div>
+                              </td>
+                              {% else %}
+                              <td>
+                                <div class="form-button-action">
+                                  <a href="{% url 'allow_license' drug.id %}" 
+                                  class="btn btn-danger" 
+                                  >
+                                  No (License)
+                                    
+                                  </a>
+                                </div>
+                              </td>
+                              {% endif %}
+                            {% endif %}
                           </tr>
                           {% endfor %}
 

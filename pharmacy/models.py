@@ -46,6 +46,7 @@ class User(AbstractUser):
     suspended = models.BooleanField(default=False)
     pharmacy = models.ForeignKey(Pharmacy, on_delete=models.CASCADE, null=True, blank=True, related_name='creators_users')
     image=models.ImageField(upload_to='media/user_profile/', null=True, blank=True)
+    bossed_by=models.ForeignKey(Pharmacy, on_delete=models.CASCADE, null=True, blank=True, related_name='pharmacy_boss')
 
     def __str__(self):
         return self.username
@@ -67,7 +68,7 @@ class Supplier(models.Model):
     email = models.EmailField(null=True, blank=True)
     date_joined = models.DateField(auto_now_add=True)
     pharmacy = models.ForeignKey(Pharmacy, on_delete=models.CASCADE, null=True, blank=True, related_name='suppliers')  # Associate with a pharmacy
-
+    is_approved = models.BooleanField(default=False)
     def __str__(self):
         return self.name if self.name else "Unnamed Supplier"
 
@@ -76,9 +77,7 @@ class Product(models.Model):
     known_tags = (
         ('opiods', 'Opiods'),
         ('overthecounter', 'OverTheCounter'),
-        ('manager', 'Manager'),  # Added manager role
-        ('cashier','Cashier'),
-        ('supervising_pharmacist','Supervising_Pharmacist'),
+        ('prescription_based', 'Prescription_Based'),
     )
     name = models.CharField(max_length=100, null=True, blank=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True, blank=True)
@@ -90,7 +89,7 @@ class Product(models.Model):
     image = models.ImageField(upload_to='products/', null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     pharmacy = models.ForeignKey(Pharmacy, on_delete=models.CASCADE, null=True, blank=True, related_name='products')  # Associate with a pharmacy
-
+    allow_sale = models.BooleanField(default=True)
     
     tags = models.CharField(max_length=25, choices=known_tags, default='overthecounter')
     def is_expired(self):
@@ -136,3 +135,25 @@ class SaleReversal(models.Model):
 
     def __str__(self):
         return f"Reversal for sale: {self.sale} by {self.request_by}"
+
+
+
+class PrivateMessage(models.Model):
+    sender = models.ForeignKey(User, related_name='sent_private_messages', on_delete=models.CASCADE)
+    receiver = models.ForeignKey(User, related_name='received_private_messages', on_delete=models.CASCADE)
+    message = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+    is_read = models.BooleanField(default=False)  # New field to track read status
+
+    def __str__(self):
+        return f"From {self.sender} to {self.receiver} at {self.timestamp}"
+
+class GroupMessage(models.Model):
+    sender = models.ForeignKey(User, related_name='sent_group_messages', on_delete=models.CASCADE)
+    group_name = models.CharField(max_length=100)
+    message = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+    is_read = models.BooleanField(default=False)  # New field for read status
+
+    def __str__(self):
+        return f"From {self.sender} in {self.group_name} at {self.timestamp}"

@@ -162,7 +162,8 @@ def supervising_pharmacist_signup(request, group_id):
             user = form.save()  # No commit argument needed now
             user.role = 'supervising_pharmacist'  # Set role as salesperson
             user.pharmacy=group  # Add the user to the specified group
-            user.save() 
+            bossed_by=group.created_by
+            user.save()
             login(request, user)
             group.supervised_by=user
             group.save()
@@ -454,7 +455,7 @@ def supervising_pharmacist_dashboard(request):
         return redirect('login')
     else:
         # Get total sales made by this salesperson
-        Pharmacies=Pharmacy.objects.all().filter(supervised_by=request.user)
+        Pharmacies=Pharmacy.objects.all().filter(supervised_by=request.user).filter(created_by=request.user.bossed_by)
         try:
             Pharmacies1 = Pharmacy.objects.filter(supervised_by =request.user).order_by('-created_at')[0]
             from django.db.models import Q
@@ -488,6 +489,35 @@ def supervising_pharmacist_dashboard(request):
         
         
         return render(request, 'pharmacy/supervising_pharmacist_dashboard.html', context)
+
+@login_required
+def list_all_supervised_pharmacist(request):
+    context={}
+    if request.user.role!='supervising_pharmacist':
+        return redirect('login')
+    else:
+        # Get total sales made by this salesperson
+        Pharmacies=Pharmacy.objects.all().filter(supervised_by=request.user)
+
+        context = {
+            'Pharmacies': Pharmacies,
+            }
+    
+        return render(request, 'pharmacy/all_supervised_pharmacies.html', context)
+@login_required
+def specific_supervised_pharmacist(request,bossed_by):
+    context={}
+    if request.user.role!='supervising_pharmacist':
+        return redirect('login')
+    else:
+        # Get total sales made by this salesperson
+        Pharmacies=Pharmacy.objects.all().filter(supervised_by=request.user)
+
+        context = {
+            'Pharmacies': Pharmacies,
+            }
+    
+        return render(request, 'pharmacy/all_supervised_pharmacies.html', context)
 
 # Sales Reversal Request (Salesperson)
 @login_required
@@ -567,8 +597,8 @@ def add_category(request):
 # Edit Category (Admin)
 ##@user_passes_test(is_admin)
 @login_required
-def edit_category(request, category_id):
-    category = Category.objects.get(id=category_id)
+def edit_category(request, id):
+    category = Category.objects.get(id=id)
     if request.method == 'POST':
         form = CategoryForm(request.POST, request.FILES, instance=category)
         if form.is_valid():
@@ -719,6 +749,44 @@ def delete_supplier(request, supplier_id):
 
 
 
+@login_required
+def revoke_sale(request, id):
+    if request.user.role != 'supervising_pharmacist':
+        return redirect('login')
+    revoked = Product.objects.get(id=id)
+    revoked.allow_sale=False
+    revoked.save()
+    return redirect('all_drugs')
+
+
+@login_required
+def allow_sale(request, id):
+    if request.user.role != 'supervising_pharmacist':
+        return redirect('login')
+    allowed= Product.objects.get(id=id)
+    allowed.allow_sale=True
+    allowed.save()
+    return redirect('all_drugs')
+
+
+@login_required
+def revoke_license(request, id):
+    if request.user.role != 'supervising_pharmacist':
+        return redirect('login')
+    revoked = Supplier.objects.get(id=id)
+    revoked.is_approved=False
+    revoked.save()
+    return redirect('all_drugs')
+
+
+@login_required
+def allow_license(request, id):
+    if request.user.role != 'supervising_pharmacist':
+        return redirect('login')
+    allowed= Supplier.objects.get(id=id)
+    allowed.is_approved=True
+    allowed.save()
+    return redirect('all_drugs')
 
 
 
@@ -742,7 +810,7 @@ def all_products(request):
             'drugs': drugs,
             'form': form
             }
-    if request.user.role== ('admin' or 'manager'):
+    if request.user.role in ['admin', 'manager', 'supervising_pharmacist']:
         return render(request, 'pharmacy/all_drugs.html',context)
     if request.user.role=='salesperson':
         return render(request, 'pharmacy/all_drugs_sales.html',context)
@@ -986,3 +1054,39 @@ def success_payment(request):
 
 def cancel_payment(request):
     return JsonResponse({'success': False, 'message': 'Payment cancelled'})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+
+@login_required
+def private_chat(request, username):
+    return render(request, 'chat/private_chat.html', {
+        'other_user': username,
+    })
+
+@login_required
+def group_chat(request, group_name):
+    return render(request, 'chat/group_chat.html', {
+        'group_name': group_name,
+    })

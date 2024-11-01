@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Group Chat: {{ group_name }}</title>
+</head>
+<body>
+    <h1>Group: {{ group_name }}</h1>
+    <audio id="notification-sound" src="{% static 'sounds/notification.mp3' %}" preload="auto"></audio>
+    <div id="chat-log"></div>
+    <input id="chat-message-input" type="text" size="100">
+    <button id="chat-message-submit">Send</button>
+
+    <script>
+        const groupName = "{{ group_name }}";
+        const chatSocket = new WebSocket(
+            'ws://' + window.location.host + '/ws/chat/group/' + groupName + '/'
+        );
+
+        chatSocket.onmessage = function(e) {
+            const data = JSON.parse(e.data);
+            document.querySelector('#chat-log').innerHTML += '<p>' + data.user + ': ' + data.message + '</p>';
+        };
+
+        chatSocket.onclose = function(e) {
+            console.error('Chat socket closed unexpectedly');
+        };
+
+        document.querySelector('#chat-message-submit').onclick = function(e) {
+            const messageInputDom = document.querySelector('#chat-message-input');
+            const message = messageInputDom.value;
+            chatSocket.send(JSON.stringify({
+                'message': message
+            }));
+            messageInputDom.value = '';
+        };
+        let unreadMessages = 0;
+
+        chatSocket.onmessage = function(e) {
+            const data = JSON.parse(e.data);
+
+            const messageElement = document.createElement('p');
+            if (data.is_read === false) {
+                messageElement.style.fontWeight = 'bold';  // Highlight unread messages
+            }
+
+            messageElement.innerText = data.user + ": " + data.message;
+            document.querySelector('#chat-log').appendChild(messageElement);
+        };
+
+
+
+        const notificationSound = document.querySelector('#notification-sound');
+
+        chatSocket.onmessage = function(e) {
+            const data = JSON.parse(e.data);
+
+            // Play sound on receiving a new message
+            notificationSound.play();
+
+            const messageElement = document.createElement('p');
+            messageElement.innerText = data.user + ": " + data.message;
+            document.querySelector('#chat-log').appendChild(messageElement);
+        };
+
+    </script>
+</body>
+</html>

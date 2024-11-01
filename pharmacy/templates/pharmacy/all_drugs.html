@@ -7,6 +7,16 @@
             <div class="page-header">
               <h3 class="fw-bold mb-3">All Drugs</h3>
               <ul class="breadcrumbs mb-3">
+                {% if user.role == 'supervising_pharmacist' %}
+                <li class="nav-home">
+                  <a href="{% url 'supervising_pharmacist_dashboard' %}">
+                    <i class="icon-home">&nbspDashboard</i>
+                  </a>
+                </li>
+                <li class="separator">
+                  <i class="icon-arrow-right"></i>
+                </li>
+                {% else %}
                 <li class="nav-home">
                   <a href="{% url 'dashboard' %}">
                     <i class="icon-home">&nbspDashboard</i>
@@ -15,12 +25,15 @@
                 <li class="separator">
                   <i class="icon-arrow-right"></i>
                 </li>
+                {% endif %}
+                {% if user.role != 'supervising_pharmacist' %}
                 <li class="nav-item">
                   <a href="{% url 'add_product' %}">Add Drugs</a>
                 </li>
                 <li class="separator">
                   <i class="icon-arrow-right"></i>
                 </li>
+                {% endif %}
               </ul>
             </div>
             <div class="row">
@@ -29,6 +42,7 @@
                   <div class="card-header">
                     <div class="d-flex align-items-center">
                       <h4 class="card-title">All Drugs</h4>
+                      {% if user.role != 'supervising_pharmacist' %}
                       <a href="{% url 'add_product' %}" 
                         class="btn btn-primary btn-round ms-auto"
                         data-bs-toggle="modal"
@@ -37,6 +51,7 @@
                         <i class="fa fa-plus"></i>
                         Add Drug
                       </a>
+                      {% endif %}
                     </div>
                   </div>
                   <div class="card-body">
@@ -113,13 +128,18 @@
                           <tr>
                             <th>Name</th>
                             <th>Category</th>
-                            <th>Supplier</th>
+                            <th>Supplier</th>                            
+                            <th>Expiry Date</th>
+
+                            {% if user.role != 'supervising_pharmacist' %}
                             <th>Stock</th>
                             <th>Selling Price</th>
                             <th>Cost Price</th>
-                            <th>Expiry Date</th>
                             <th style="width: 10%">Edit</th>
                             <th style="width: 10%">Delete</th>
+                            {% else %}
+                            <th style="width: 10%">Allow Sale</th>
+                            {% endif %}
                           </tr>
                         </thead>
 
@@ -127,12 +147,22 @@
                           {% for drug in drugs %}
                           <tr>
                             <td>{{ drug.name}}</td>
-                            <td>{{ drug.category.name}}</td>
+                            <td>
+                               {{ drug.category.id }}
+                                <div class="form-button-action">
+                                 {% if drug.category %}
+                                    <a href="{% url 'edit_category' drug.category.id %}" class="btn btn-primary">{{ drug.category.id }}</a>
+                                {% else %}
+                                    <span>No category</span>
+                                {% endif %}
+                                </div>
+                              </td>
                             <td>{{ drug.supplier.name}}</td>
+                            <td>{{ drug.expiry_date}}</td>
+                            {% if user.role != 'supervising_pharmacist' %}
                             <td>{{ drug.stock}}</td>
                             <td>{{ drug.price}}</td>
                             <td>{{ drug.cost_price}}</td>
-                            <td>{{ drug.expiry_date}}</td>
                             <td>
                               <div class="form-button-action">
                                 <a href="{% url 'edit_product' drug.id %}" 
@@ -159,6 +189,30 @@
                                 </a>
                               </div>
                             </td>
+                            {% else %}
+                              {% if drug.allow_sale == True %}
+                              <td>
+                                <div class="form-button-action">
+                                  <a href="{% url 'revoke_sale' drug.id %}"
+                                  class="btn btn-primary" 
+                                  >
+                                    Allowed (Revoke)
+                                  </a>
+                                </div>
+                              </td>
+                              {% else %}
+                              <td>
+                                <div class="form-button-action">
+                                  <a href="{% url 'allow_sale' drug.id %}" 
+                                  class="btn btn-danger" 
+                                  >
+                                  Revoked (Allow it)
+                                    
+                                  </a>
+                                </div>
+                              </td>
+                              {% endif %}
+                            {% endif %}
                           </tr>
                           {% endfor %}
 
