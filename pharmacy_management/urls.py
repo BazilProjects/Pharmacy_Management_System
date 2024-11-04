@@ -28,6 +28,8 @@ from django.conf.urls import (
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('pharmacy.urls')),
+    path("video/",include('video.urls')),
+    path("analytics/",include('analytics.urls')),
     re_path(r'^media/(?P<path>.*)$', serve,{'document_root': settings.MEDIA_ROOT}),
 ]
 

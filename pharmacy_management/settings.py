@@ -40,12 +40,19 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'daphne',
     'django.contrib.staticfiles',
+    'channels',
     'django.contrib.sitemaps',
     'django_jinja',
     'crispy_forms',
     'crispy_bootstrap4',
     'pharmacy',
+    'video',
+    'analytics',
+    'rest_framework',
+    'ipware',
+    'geoip2',
 ]
 
 MIDDLEWARE = [
@@ -81,9 +88,27 @@ TEMPLATES = [
 
 
 # settings.py
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer",
+    },
+}
+
+from django.contrib.messages import constants as messages
+
+MESSAGE_TAGS = {
+    messages.DEBUG: 'alert-info',
+    messages.INFO: 'alert-info',
+    messages.SUCCESS: 'alert-success',
+    messages.WARNING: 'alert-warning',
+    messages.ERROR: 'alert-danger',
+}
+
+# ASGI_APPLICATION should be set to your outermost router
+ASGI_APPLICATION = 'pharmacy_management.asgi.application'
 
 
-WSGI_APPLICATION = 'pharmacy_management.wsgi.application'
+#WSGI_APPLICATION = 'pharmacy_management.wsgi.application'
 
 
 # Database
@@ -165,7 +190,14 @@ AUTH_USER_MODEL = 'pharmacy.User'  # Replace 'yourapp' with the actual name of y
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+GEOIP_PATH = os.path.join(BASE_DIR, 'geoip')
 
 
 LOGIN_URL = '/login/'
 #STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://f3ba-14-99-167-142.ngrok-free.app',
+    'http://127.0.0.1:8000',  # Include your local development server
+]

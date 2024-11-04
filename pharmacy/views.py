@@ -1081,12 +1081,12 @@ from django.contrib.auth.decorators import login_required
 
 @login_required
 def private_chat(request, username):
-    return render(request, 'chat/private_chat.html', {
+    return render(request, 'pharmacy/chat/private_chat.html', {
         'other_user': username,
     })
 
 @login_required
 def group_chat(request, group_name):
-    return render(request, 'chat/group_chat.html', {
+    return render(request, 'pharmacy/chat/group_chat.html', {
         'group_name': group_name,
     })
